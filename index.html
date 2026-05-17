@@ -1,0 +1,2307 @@
+cat > /mnt/user-data/outputs/microai-hub.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MicroAI Hub — Create & Sell With AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan: #00f5ff;
+  --purple: #8b5cf6;
+  --pink: #ff00aa;
+  --dark: #030712;
+  --dark2: #0a0f1e;
+  --dark3: #0d1424;
+  --glass: rgba(255,255,255,0.04);
+  --glass2: rgba(0,245,255,0.06);
+  --border: rgba(0,245,255,0.15);
+  --border2: rgba(139,92,246,0.2);
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --glow-cyan: 0 0 20px rgba(0,245,255,0.4), 0 0 60px rgba(0,245,255,0.1);
+  --glow-purple: 0 0 20px rgba(139,92,246,0.4), 0 0 60px rgba(139,92,246,0.1);
+  --glow-pink: 0 0 20px rgba(255,0,170,0.4);
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--dark);
+  color: var(--text);
+  overflow-x: hidden;
+  font-size: 16px;
+  line-height: 1.6;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark2); }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+/* ===== GRID BACKGROUND ===== */
+.grid-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridPulse 8s ease-in-out infinite;
+}
+@keyframes gridPulse {
+  0%,100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.scanlines {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+}
+.orb {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px); opacity: 0.12; animation: orbFloat 15s ease-in-out infinite;
+}
+.orb1 { width: 600px; height: 600px; background: var(--purple); top: -200px; left: -100px; animation-delay: 0s; }
+.orb2 { width: 500px; height: 500px; background: var(--cyan); bottom: -150px; right: -100px; animation-delay: 5s; }
+.orb3 { width: 400px; height: 400px; background: var(--pink); top: 40%; left: 40%; animation-delay: 10s; }
+@keyframes orbFloat {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-20px) scale(1.05); }
+  66% { transform: translate(-20px,30px) scale(0.95); }
+}
+
+/* ===== PARTICLES ===== */
+.particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.particle {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%;
+  background: var(--cyan); animation: particleFloat linear infinite;
+  opacity: 0;
+}
+@keyframes particleFloat {
+  0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10px) translateX(var(--drift)); opacity: 0; }
+}
+
+/* ===== NAVBAR ===== */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 0 2rem; height: 70px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(3,7,18,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+#navbar.scrolled {
+  background: rgba(3,7,18,0.95);
+  box-shadow: var(--glow-cyan);
+}
+.nav-logo {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; cursor: pointer;
+  animation: logoGlow 3s ease-in-out infinite;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; animation: iconSpin 10s linear infinite;
+  box-shadow: var(--glow-cyan);
+}
+@keyframes iconSpin { 0%,100%{transform:rotate(0deg);} 50%{transform:rotate(180deg);} }
+@keyframes logoGlow {
+  0%,100% { filter: brightness(1); }
+  50% { filter: brightness(1.3) drop-shadow(0 0 10px var(--cyan)); }
+}
+.nav-links {
+  display: flex; align-items: center; gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
+  color: var(--text2); text-decoration: none; letter-spacing: 1px;
+  text-transform: uppercase; transition: all 0.3s ease; position: relative;
+  cursor: pointer;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1px; background: var(--cyan); transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-cta { display: flex; gap: 0.75rem; align-items: center; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 0.55rem 1.4rem;
+  border-radius: 6px; font-family: var(--font-display); font-size: 0.72rem;
+  font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; transition: all 0.3s ease; text-decoration: none; border: none;
+}
+.btn-ghost {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text2);
+}
+.btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: var(--glow-cyan); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: #000; font-weight: 800;
+  box-shadow: 0 0 20px rgba(0,245,255,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,245,255,0.5); }
+.btn-purple {
+  background: linear-gradient(135deg, var(--purple), var(--pink));
+  color: #fff; font-weight: 800;
+  box-shadow: 0 0 20px rgba(139,92,246,0.3);
+}
+.btn-purple:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(139,92,246,0.5); }
+.btn-lg { padding: 0.85rem 2.2rem; font-size: 0.8rem; }
+.btn-sm { padding: 0.4rem 1rem; font-size: 0.65rem; }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.hamburger span { width: 24px; height: 2px; background: var(--cyan); transition: all 0.3s; }
+
+/* ===== PAGES ===== */
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ===== HOME PAGE ===== */
+#home { position: relative; }
+
+/* HERO */
+.hero {
+  min-height: 100vh; display: flex; align-items: center;
+  position: relative; padding: 120px 2rem 80px;
+  justify-content: center; text-align: center;
+}
+.hero-content { position: relative; z-index: 2; max-width: 900px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px; border-radius: 100px;
+  border: 1px solid rgba(0,245,255,0.3);
+  background: rgba(0,245,255,0.05);
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 2rem; animation: fadeInUp 0.8s ease both;
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); animation: blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+.hero h1 {
+  font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+  margin-bottom: 1rem; animation: fadeInUp 0.8s 0.2s ease both;
+}
+.hero h1 span.gradient-text {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 50%, var(--pink) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  display: block;
+}
+.typing-wrapper {
+  font-family: var(--font-display); font-size: clamp(1.4rem, 3vw, 2.5rem);
+  font-weight: 700; color: var(--cyan); margin-bottom: 1.5rem;
+  min-height: 50px; display: flex; align-items: center; justify-content: center;
+  gap: 10px; animation: fadeInUp 0.8s 0.4s ease both;
+}
+.typing-prefix { color: var(--text2); font-size: 0.7em; }
+#typed-text { color: var(--cyan); }
+.cursor { display: inline-block; width: 3px; height: 1em; background: var(--cyan); animation: blink 0.8s step-end infinite; vertical-align: text-bottom; }
+.hero-desc {
+  font-size: 1.15rem; color: var(--text2); max-width: 620px; margin: 0 auto 2.5rem;
+  line-height: 1.8; animation: fadeInUp 0.8s 0.5s ease both;
+}
+.hero-buttons {
+  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  animation: fadeInUp 0.8s 0.6s ease both;
+}
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; margin-top: 5rem; position: relative; z-index: 2;
+  background: var(--border); border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); animation: fadeInUp 0.8s 0.8s ease both;
+}
+.stat-item {
+  padding: 2rem 1.5rem; background: var(--glass);
+  backdrop-filter: blur(10px); text-align: center;
+  transition: all 0.3s ease;
+}
+.stat-item:hover { background: var(--glass2); }
+.stat-num {
+  font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 900; color: var(--cyan); display: block;
+  text-shadow: var(--glow-cyan);
+}
+.stat-label { font-size: 0.85rem; color: var(--text2); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SECTION */
+section { position: relative; z-index: 2; padding: 6rem 2rem; }
+.section-header { text-align: center; margin-bottom: 4rem; }
+.section-tag {
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--cyan);
+  letter-spacing: 3px; text-transform: uppercase; display: block; margin-bottom: 1rem;
+}
+.section-title {
+  font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800; margin-bottom: 1rem; letter-spacing: -1px;
+}
+.section-desc { font-size: 1.05rem; color: var(--text2); max-width: 560px; margin: 0 auto; }
+.container { max-width: 1200px; margin: 0 auto; }
+
+/* FEATURES */
+.features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;
+}
+.feature-card {
+  padding: 2rem; border-radius: 16px;
+  background: var(--glass); border: 1px solid var(--border);
+  backdrop-filter: blur(10px); transition: all 0.4s ease;
+  position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: ''; position: absolute; inset: 0; opacity: 0;
+  background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(139,92,246,0.05));
+  transition: opacity 0.4s ease;
+}
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover { transform: translateY(-6px); border-color: rgba(0,245,255,0.3); box-shadow: var(--glow-cyan); }
+.feature-icon {
+  width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; margin-bottom: 1.2rem; position: relative;
+  background: linear-gradient(135deg, rgba(0,245,255,0.1), rgba(139,92,246,0.1));
+  border: 1px solid var(--border);
+}
+.feature-card:nth-child(1) .feature-icon { box-shadow: 0 0 20px rgba(0,245,255,0.2); }
+.feature-card:nth-child(2) .feature-icon { box-shadow: 0 0 20px rgba(139,92,246,0.2); }
+.feature-card:nth-child(3) .feature-icon { box-shadow: 0 0 20px rgba(255,0,170,0.2); }
+.feature-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; color: #fff; }
+.feature-desc { font-size: 0.9rem; color: var(--text2); line-height: 1.7; }
+
+/* TOOLS SHOWCASE */
+.tools-showcase { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+.tool-chip {
+  padding: 1rem 1.2rem; border-radius: 10px; background: var(--glass);
+  border: 1px solid var(--border); display: flex; align-items: center; gap: 10px;
+  cursor: pointer; transition: all 0.3s ease; font-size: 0.88rem; font-weight: 600;
+}
+.tool-chip:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,245,255,0.05); transform: translateY(-3px); box-shadow: var(--glow-cyan); }
+.tool-chip span { font-size: 1.2rem; }
+
+/* HOW IT WORKS */
+.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; position: relative; }
+.steps-grid::before {
+  content: ''; position: absolute; top: 40px; left: 15%; right: 15%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+}
+.step-card { text-align: center; padding: 2rem 1.5rem; }
+.step-num {
+  width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 1.5rem;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 1.4rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--dark2), var(--dark3));
+  border: 2px solid var(--cyan); color: var(--cyan); box-shadow: var(--glow-cyan);
+  position: relative; z-index: 1;
+}
+.step-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; color: #fff; }
+.step-desc { font-size: 0.9rem; color: var(--text2); }
+
+/* PRICING */
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: center; }
+.pricing-card {
+  padding: 2.5rem; border-radius: 20px; background: var(--glass);
+  border: 1px solid var(--border); position: relative; overflow: hidden; transition: all 0.4s ease;
+}
+.pricing-card:hover { transform: translateY(-8px); }
+.pricing-card.featured {
+  border-color: var(--cyan); box-shadow: var(--glow-cyan);
+  background: linear-gradient(135deg, rgba(0,245,255,0.06), rgba(139,92,246,0.06));
+}
+.pricing-card.featured::after {
+  content: '★ MOST POPULAR'; position: absolute; top: 1rem; right: 1rem;
+  font-family: var(--font-display); font-size: 0.6rem; letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: #000; padding: 4px 10px; border-radius: 100px; font-weight: 700;
+}
+.plan-name { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); margin-bottom: 1rem; }
+.plan-price { font-family: var(--font-display); font-size: 3rem; font-weight: 900; color: #fff; line-height: 1; }
+.plan-price span { font-size: 1rem; color: var(--text2); vertical-align: super; }
+.plan-price sub { font-size: 0.9rem; color: var(--text2); font-weight: 400; }
+.plan-desc { font-size: 0.88rem; color: var(--text2); margin: 1rem 0 1.5rem; }
+.plan-features { list-style: none; margin-bottom: 2rem; }
+.plan-features li {
+  padding: 0.5rem 0; font-size: 0.9rem; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.plan-features li::before { content: '✦'; color: var(--cyan); font-size: 0.7rem; flex-shrink: 0; }
+
+/* TESTIMONIALS */
+.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+.testimonial-card {
+  padding: 2rem; border-radius: 16px; background: var(--glass);
+  border: 1px solid var(--border); transition: all 0.3s ease;
+}
+.testimonial-card:hover { border-color: var(--purple); box-shadow: var(--glow-purple); }
+.stars { color: #fbbf24; font-size: 0.9rem; margin-bottom: 1rem; }
+.testimonial-text { font-size: 0.92rem; color: var(--text2); line-height: 1.7; font-style: italic; margin-bottom: 1.5rem; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.author-avatar {
+  width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--purple), var(--cyan));
+  flex-shrink: 0;
+}
+.author-name { font-weight: 700; font-size: 0.9rem; color: #fff; }
+.author-role { font-size: 0.8rem; color: var(--text2); }
+
+/* FAQ */
+.faq-list { max-width: 780px; margin: 0 auto; }
+.faq-item {
+  border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1rem;
+  overflow: hidden; transition: all 0.3s ease;
+}
+.faq-item:hover { border-color: rgba(0,245,255,0.25); }
+.faq-q {
+  padding: 1.2rem 1.5rem; cursor: pointer; display: flex; justify-content: space-between;
+  align-items: center; font-weight: 600; font-size: 0.95rem; background: var(--glass);
+}
+.faq-q:hover { background: var(--glass2); }
+.faq-arrow { color: var(--cyan); transition: transform 0.3s ease; font-size: 0.8rem; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-a {
+  max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease;
+  padding: 0 1.5rem; font-size: 0.9rem; color: var(--text2); line-height: 1.7;
+}
+.faq-item.open .faq-a { max-height: 300px; padding: 1rem 1.5rem 1.5rem; }
+
+/* FOOTER */
+footer {
+  background: var(--dark2); border-top: 1px solid var(--border);
+  position: relative; z-index: 2;
+}
+.footer-main { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+.footer-brand .nav-logo { margin-bottom: 1rem; display: flex; }
+.footer-desc { font-size: 0.88rem; color: var(--text2); line-height: 1.7; margin-bottom: 1.5rem; }
+.social-links { display: flex; gap: 10px; }
+.social-btn {
+  width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--glass); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.3s ease; font-size: 1rem;
+  text-decoration: none; color: var(--text2);
+}
+.social-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: var(--glow-cyan); }
+.footer-col h4 { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 1.2rem; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 0.6rem; }
+.footer-col ul li a { font-size: 0.88rem; color: var(--text2); text-decoration: none; transition: color 0.3s; cursor: pointer; }
+.footer-col ul li a:hover { color: var(--cyan); }
+.newsletter-form { display: flex; gap: 8px; margin-top: 1rem; }
+.newsletter-input {
+  flex: 1; padding: 0.55rem 1rem; background: var(--glass); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-family: var(--font-body); font-size: 0.85rem;
+  outline: none;
+}
+.newsletter-input:focus { border-color: var(--cyan); }
+.footer-bottom { border-top: 1px solid var(--border); padding: 1.5rem 2rem; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; color: var(--text2); }
+
+/* ===== AUTH PAGE ===== */
+#auth {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 6rem 2rem 3rem; position: relative;
+}
+.auth-card {
+  width: 100%; max-width: 460px; background: rgba(10,15,30,0.9);
+  border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem;
+  backdrop-filter: blur(20px); position: relative; z-index: 2;
+  box-shadow: 0 0 60px rgba(0,245,255,0.05);
+}
+.auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+.auth-tab {
+  flex: 1; padding: 0.75rem; font-family: var(--font-display); font-size: 0.75rem;
+  letter-spacing: 2px; text-transform: uppercase; background: transparent; border: none;
+  color: var(--text2); cursor: pointer; transition: all 0.3s ease; border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.auth-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+.form-group { margin-bottom: 1.2rem; }
+.form-label { display: block; font-size: 0.82rem; color: var(--text2); margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); }
+.form-input {
+  width: 100%; padding: 0.7rem 1rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-family: var(--font-body); font-size: 0.95rem;
+  outline: none; transition: all 0.3s ease;
+}
+.form-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,245,255,0.1); background: rgba(0,245,255,0.03); }
+.form-select {
+  width: 100%; padding: 0.7rem 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-family: var(--font-body); font-size: 0.95rem;
+  outline: none; transition: all 0.3s ease;
+}
+.form-select:focus { border-color: var(--purple); }
+.form-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-size: 0.85rem; }
+.form-check { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text2); }
+.form-check input { accent-color: var(--cyan); }
+.forgot-link { color: var(--cyan); text-decoration: none; font-size: 0.82rem; cursor: pointer; }
+.auth-divider { text-align: center; color: var(--text2); font-size: 0.8rem; margin: 1.2rem 0; position: relative; }
+.auth-divider::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--border); }
+.auth-divider span { background: rgba(10,15,30,1); padding: 0 12px; position: relative; }
+.auth-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem; }
+.auth-subtitle { font-size: 0.88rem; color: var(--text2); margin-bottom: 1.5rem; }
+
+/* ===== DASHBOARD ===== */
+#dashboard { display: none; }
+#dashboard.active {
+  display: grid; grid-template-columns: 260px 1fr;
+  min-height: 100vh; padding-top: 70px;
+}
+.sidebar {
+  background: rgba(10,15,30,0.95); border-right: 1px solid var(--border);
+  padding: 1.5rem 0; position: sticky; top: 70px; height: calc(100vh - 70px);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.sidebar-user {
+  padding: 0.5rem 1.5rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;
+}
+.user-avatar-big {
+  width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--purple));
+  display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+  margin-bottom: 0.75rem; border: 2px solid var(--cyan); box-shadow: var(--glow-cyan);
+}
+.user-name { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; color: #fff; }
+.user-role { font-size: 0.75rem; color: var(--cyan); letter-spacing: 1px; text-transform: uppercase; }
+.credit-bar { margin-top: 0.75rem; }
+.credit-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text2); margin-bottom: 4px; }
+.credit-num { color: var(--cyan); font-family: var(--font-mono); }
+.credit-track { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+.credit-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--purple)); border-radius: 2px; transition: width 0.6s ease; }
+.sidebar-nav { flex: 1; }
+.sidebar-section { padding: 0 1rem; margin-bottom: 0.5rem; }
+.sidebar-section-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text2); letter-spacing: 2px; text-transform: uppercase; padding: 0.5rem 0.5rem 0.3rem; }
+.sidebar-link {
+  display: flex; align-items: center; gap: 10px; padding: 0.65rem 0.75rem;
+  border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+  font-size: 0.9rem; color: var(--text2); font-weight: 500; border: none; background: none; width: 100%; text-align: left;
+}
+.sidebar-link:hover, .sidebar-link.active { background: rgba(0,245,255,0.08); color: var(--cyan); }
+.sidebar-link.active { border-right: 2px solid var(--cyan); }
+.sidebar-icon { font-size: 1rem; width: 20px; }
+.sidebar-badge {
+  margin-left: auto; background: var(--cyan); color: #000; font-family: var(--font-mono);
+  font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;
+}
+.dash-main { background: var(--dark); overflow-y: auto; }
+.dash-header { padding: 2rem 2rem 0; display: flex; justify-content: space-between; align-items: flex-start; }
+.dash-greeting { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; }
+.dash-date { font-size: 0.8rem; color: var(--text2); font-family: var(--font-mono); }
+.dash-notif {
+  position: relative; width: 40px; height: 40px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--glass); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+.dash-notif:hover { border-color: var(--cyan); box-shadow: var(--glow-cyan); }
+.notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); animation: blink 1.5s infinite; }
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 1.5rem 2rem; }
+.stat-card {
+  padding: 1.4rem; border-radius: 12px; background: var(--glass);
+  border: 1px solid var(--border); transition: all 0.3s ease; position: relative; overflow: hidden;
+}
+.stat-card::after { content: ''; position: absolute; top: 0; right: 0; width: 60px; height: 60px; border-radius: 50%; filter: blur(30px); opacity: 0.2; }
+.stat-card:nth-child(1)::after { background: var(--cyan); }
+.stat-card:nth-child(2)::after { background: var(--purple); }
+.stat-card:nth-child(3)::after { background: var(--pink); }
+.stat-card:nth-child(4)::after { background: #22c55e; }
+.stat-card:hover { transform: translateY(-3px); }
+.stat-card-icon { font-size: 1.4rem; margin-bottom: 0.75rem; }
+.stat-card-val { font-family: var(--font-display); font-size: 1.6rem; font-weight: 900; color: #fff; }
+.stat-card-lbl { font-size: 0.78rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+.stat-card-change { font-size: 0.75rem; color: #22c55e; margin-top: 6px; font-family: var(--font-mono); }
+.dash-content { padding: 0 2rem 2rem; }
+.dash-section { margin-bottom: 2rem; }
+.dash-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.dash-section-title { font-family: var(--font-display); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); }
+
+/* TOOLS GRID IN DASHBOARD */
+.tool-search { width: 100%; padding: 0.65rem 1rem; background: var(--glass); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--font-body); font-size: 0.9rem; outline: none; margin-bottom: 1rem; }
+.tool-search:focus { border-color: var(--cyan); }
+.tools-grid-dash { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.tool-card-dash {
+  padding: 1.3rem; border-radius: 12px; background: var(--glass);
+  border: 1px solid var(--border); transition: all 0.3s ease; cursor: pointer;
+}
+.tool-card-dash:hover { border-color: var(--cyan); transform: translateY(-3px); box-shadow: var(--glow-cyan); }
+.tool-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+.tool-icon-lg { font-size: 1.6rem; }
+.tool-cost { font-family: var(--font-mono); font-size: 0.7rem; color: var(--cyan); background: rgba(0,245,255,0.1); padding: 3px 8px; border-radius: 4px; }
+.tool-name { font-family: var(--font-display); font-size: 0.8rem; font-weight: 700; color: #fff; margin-bottom: 0.4rem; }
+.tool-desc { font-size: 0.78rem; color: var(--text2); line-height: 1.5; }
+
+/* TOOL MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center;
+  padding: 2rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  width: 100%; max-width: 660px; background: var(--dark2); border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden; transform: scale(0.95);
+  transition: transform 0.3s ease; box-shadow: 0 0 60px rgba(0,245,255,0.1);
+}
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-header {
+  padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(135deg, rgba(0,245,255,0.04), rgba(139,92,246,0.04));
+}
+.modal-title { font-family: var(--font-display); font-size: 1rem; font-weight: 800; }
+.modal-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--glass); cursor: pointer; color: var(--text2); font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+.modal-close:hover { border-color: var(--pink); color: var(--pink); }
+.modal-body { padding: 2rem; }
+.modal-footer { padding: 1.2rem 2rem; border-top: 1px solid var(--border); display: flex; gap: 1rem; justify-content: flex-end; }
+.prompt-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--cyan); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+.prompt-area {
+  width: 100%; height: 120px; padding: 0.8rem 1rem; background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border); border-radius: 10px; color: var(--text);
+  font-family: var(--font-mono); font-size: 0.85rem; resize: vertical; outline: none;
+  transition: all 0.3s ease;
+}
+.prompt-area:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,245,255,0.08); }
+.output-box {
+  margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border); border-radius: 10px; font-family: var(--font-mono);
+  font-size: 0.82rem; color: var(--text2); line-height: 1.7; min-height: 100px;
+  max-height: 200px; overflow-y: auto; display: none;
+}
+.output-box.visible { display: block; animation: fadeInUp 0.4s ease; }
+.output-actions { display: flex; gap: 8px; margin-top: 8px; }
+.generating-anim {
+  display: flex; align-items: center; gap: 8px; color: var(--cyan);
+  font-family: var(--font-mono); font-size: 0.82rem;
+}
+.dots { display: flex; gap: 4px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); animation: dotBounce 1.2s ease-in-out infinite; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotBounce { 0%,80%,100%{transform:scale(0.6);opacity:0.5;} 40%{transform:scale(1);opacity:1;} }
+
+/* ACTIVITY FEED */
+.activity-list { list-style: none; }
+.activity-item { display: flex; gap: 12px; align-items: flex-start; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.activity-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(0,245,255,0.1); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+.activity-text { font-size: 0.85rem; color: var(--text2); }
+.activity-text strong { color: var(--text); }
+.activity-time { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text2); margin-top: 2px; }
+
+/* ===== MARKETPLACE ===== */
+#marketplace { padding-top: 80px; min-height: 100vh; position: relative; z-index: 2; }
+.market-header { padding: 2rem 2rem 0; }
+.market-hero { background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(139,92,246,0.05)); border-bottom: 1px solid var(--border); padding: 3rem 2rem; text-align: center; }
+.market-hero h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; }
+.market-controls { display: flex; gap: 1rem; padding: 1.5rem 2rem; flex-wrap: wrap; align-items: center; max-width: 1200px; margin: 0 auto; }
+.market-search { flex: 1; min-width: 200px; padding: 0.7rem 1rem 0.7rem 2.8rem; background: var(--glass); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: var(--font-body); font-size: 0.9rem; outline: none; position: relative; }
+.market-search:focus { border-color: var(--cyan); }
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 1rem; }
+.category-filters { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 2rem 1.5rem; max-width: 1200px; margin: 0 auto; }
+.cat-btn {
+  padding: 0.45rem 1rem; border-radius: 100px; border: 1px solid var(--border);
+  background: var(--glass); font-size: 0.82rem; color: var(--text2);
+  cursor: pointer; transition: all 0.3s ease; font-family: var(--font-body);
+}
+.cat-btn:hover, .cat-btn.active { border-color: var(--cyan); color: var(--cyan); background: rgba(0,245,255,0.06); }
+.sort-select { padding: 0.65rem 1rem; background: var(--glass); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--font-body); font-size: 0.85rem; outline: none; min-width: 160px; }
+.services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; padding: 1rem 2rem 3rem; max-width: 1200px; margin: 0 auto; }
+.service-card {
+  border-radius: 16px; background: var(--glass); border: 1px solid var(--border);
+  overflow: hidden; transition: all 0.4s ease; cursor: pointer;
+}
+.service-card:hover { transform: translateY(-6px); border-color: rgba(0,245,255,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.4), var(--glow-cyan); }
+.service-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; overflow: hidden; }
+.service-thumb::before { content: ''; position: absolute; inset: 0; opacity: 0.3; }
+.service-card:nth-child(1) .service-thumb::before { background: linear-gradient(135deg, var(--cyan), var(--purple)); }
+.service-card:nth-child(2) .service-thumb::before { background: linear-gradient(135deg, var(--purple), var(--pink)); }
+.service-card:nth-child(3) .service-thumb::before { background: linear-gradient(135deg, var(--pink), #ff6b00); }
+.service-card:nth-child(4) .service-thumb::before { background: linear-gradient(135deg, #22c55e, var(--cyan)); }
+.service-card:nth-child(5) .service-thumb::before { background: linear-gradient(135deg, var(--cyan), #22c55e); }
+.service-card:nth-child(6) .service-thumb::before { background: linear-gradient(135deg, var(--purple), var(--cyan)); }
+.featured-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: #000; font-family: var(--font-display); font-size: 0.6rem;
+  letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; font-weight: 700;
+}
+.service-body { padding: 1.2rem; }
+.service-seller { display: flex; align-items: center; gap: 8px; margin-bottom: 0.6rem; font-size: 0.8rem; color: var(--text2); }
+.seller-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+.service-title { font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; color: #fff; margin-bottom: 0.6rem; line-height: 1.4; }
+.service-rating { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text2); margin-bottom: 1rem; }
+.rating-stars { color: #fbbf24; }
+.service-footer { display: flex; align-items: center; justify-content: space-between; }
+.service-price { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: var(--cyan); }
+.sales-count { font-size: 0.75rem; color: var(--text2); font-family: var(--font-mono); }
+
+/* ===== SELL PAGE ===== */
+#sell { padding-top: 80px; min-height: 100vh; position: relative; z-index: 2; }
+.sell-container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+.sell-header { text-align: center; padding: 3rem 2rem 2rem; }
+.sell-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem; }
+.sell-form { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; }
+.sell-preview { position: sticky; top: 90px; }
+.preview-card { border-radius: 16px; background: var(--glass); border: 1px solid var(--border); overflow: hidden; }
+.preview-thumb { height: 140px; background: linear-gradient(135deg, rgba(0,245,255,0.1), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.preview-info { padding: 1.2rem; }
+.preview-title { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--cyan); }
+.preview-desc { font-size: 0.8rem; color: var(--text2); line-height: 1.5; margin-bottom: 1rem; }
+.preview-meta { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text2); }
+.preview-price { font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: var(--cyan); margin-top: 0.75rem; }
+.earnings-est { background: rgba(0,245,255,0.05); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-top: 1.5rem; }
+.est-label { font-size: 0.78rem; color: var(--text2); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-mono); }
+.est-value { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; color: var(--cyan); }
+.est-note { font-size: 0.75rem; color: var(--text2); margin-top: 4px; }
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tag { padding: 4px 10px; border-radius: 100px; background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); font-size: 0.75rem; color: var(--purple); cursor: pointer; transition: all 0.2s; }
+.tag:hover { background: rgba(139,92,246,0.25); }
+
+/* ===== ADMIN ===== */
+#admin { padding-top: 70px; }
+#admin.active {
+  display: grid; grid-template-columns: 240px 1fr; min-height: 100vh;
+}
+.admin-sidebar {
+  background: rgba(5,8,20,0.98); border-right: 1px solid var(--border);
+  padding: 2rem 0; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto;
+}
+.admin-brand { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+.admin-brand-name { font-family: var(--font-display); font-size: 0.85rem; font-weight: 800; color: var(--pink); letter-spacing: 2px; }
+.admin-role { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text2); }
+.admin-link { display: flex; align-items: center; gap: 10px; padding: 0.65rem 1.5rem; font-size: 0.88rem; color: var(--text2); cursor: pointer; transition: all 0.3s ease; font-family: var(--font-body); }
+.admin-link:hover, .admin-link.active { background: rgba(255,0,170,0.08); color: var(--pink); border-left: 2px solid var(--pink); }
+.admin-main { background: var(--dark); overflow-y: auto; }
+.admin-header { padding: 2rem; border-bottom: 1px solid var(--border); background: rgba(10,15,30,0.5); display: flex; justify-content: space-between; align-items: center; }
+.admin-header h2 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; }
+.admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; padding: 2rem; }
+.admin-stat { padding: 1.5rem; border-radius: 12px; background: var(--glass); border: 1px solid var(--border); }
+.admin-stat-val { font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; }
+.admin-stat-lbl { font-size: 0.78rem; color: var(--text2); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.admin-content { padding: 0 2rem 2rem; }
+.admin-table-wrap { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 2rem; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th { padding: 1rem; background: rgba(0,0,0,0.4); text-align: left; font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); border-bottom: 1px solid var(--border); }
+.admin-table td { padding: 0.9rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.88rem; color: var(--text); }
+.admin-table tr:hover td { background: rgba(0,245,255,0.03); }
+.status-badge { padding: 3px 10px; border-radius: 100px; font-size: 0.72rem; font-family: var(--font-mono); font-weight: 600; }
+.status-active { background: rgba(34,197,94,0.15); color: #22c55e; }
+.status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.status-banned { background: rgba(239,68,68,0.15); color: #ef4444; }
+.chart-area { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+.chart-title { font-family: var(--font-display); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 1.5rem; }
+.chart-bars { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+.chart-bar { flex: 1; border-radius: 4px 4px 0 0; background: linear-gradient(180deg, var(--cyan), var(--purple)); transition: all 0.4s ease; cursor: pointer; position: relative; }
+.chart-bar:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(0,245,255,0.3); }
+.chart-bar::after { content: attr(data-val); position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 0.6rem; color: var(--cyan); white-space: nowrap; }
+.admin-log { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text2); background: rgba(0,0,0,0.4); border-radius: 8px; padding: 1rem; height: 180px; overflow-y: auto; line-height: 2; }
+.log-line { display: flex; gap: 12px; }
+.log-time { color: var(--purple); flex-shrink: 0; }
+.log-type { color: var(--cyan); }
+.log-msg { color: var(--text2); }
+
+/* TOAST NOTIFICATIONS */
+#toast-container { position: fixed; top: 90px; right: 1.5rem; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast {
+  padding: 0.9rem 1.2rem; border-radius: 10px; background: var(--dark2);
+  border: 1px solid var(--border); min-width: 260px; max-width: 360px;
+  display: flex; align-items: center; gap: 10px; font-size: 0.88rem;
+  animation: slideInRight 0.4s ease, fadeOutToast 0.4s ease 2.5s forwards;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+.toast-success { border-color: #22c55e; }
+.toast-error { border-color: #ef4444; }
+.toast-info { border-color: var(--cyan); }
+.toast-icon { font-size: 1.1rem; }
+@keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes fadeOutToast { from { opacity: 1; } to { opacity: 0; transform: translateX(120%); } }
+
+/* MOBILE NAV */
+.mobile-nav {
+  position: fixed; top: 70px; left: 0; right: 0; bottom: 0; z-index: 999;
+  background: rgba(3,7,18,0.97); backdrop-filter: blur(20px);
+  padding: 2rem; display: flex; flex-direction: column; gap: 1rem;
+  transform: translateX(-100%); transition: transform 0.4s ease;
+}
+.mobile-nav.open { transform: translateX(0); }
+.mobile-nav a { font-family: var(--font-display); font-size: 1.2rem; color: var(--text2); text-decoration: none; padding: 0.8rem 0; border-bottom: 1px solid var(--border); cursor: pointer; display: block; }
+.mobile-nav a:hover { color: var(--cyan); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  #dashboard.active { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .sell-layout { grid-template-columns: 1fr; }
+  .footer-main { grid-template-columns: 1fr 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .admin-stats { grid-template-columns: repeat(2, 1fr); }
+  #admin.active { grid-template-columns: 1fr; }
+  .admin-sidebar { display: none; }
+  .pricing-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .hero h1 { font-size: 2.4rem; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .footer-main { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .admin-stats { grid-template-columns: 1fr 1fr; }
+  section { padding: 4rem 1.2rem; }
+}
+
+/* REVEAL ANIMATION */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* GLOW BORDER ANIMATION */
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(0,245,255,0.2); }
+  50% { border-color: rgba(0,245,255,0.5); box-shadow: var(--glow-cyan); }
+}
+.glow-border { animation: borderGlow 3s ease-in-out infinite; }
+
+/* NEON FLICKER */
+@keyframes neonFlicker {
+  0%, 95%, 100% { opacity: 1; }
+  96% { opacity: 0.4; }
+  97% { opacity: 1; }
+  98% { opacity: 0.2; }
+  99% { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<!-- BACKGROUND EFFECTS -->
+<div class="grid-bg"></div>
+<div class="scanlines"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div class="particles" id="particles"></div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="showPage('home')">
+    <div class="nav-logo-icon">⬡</div>
+    MicroAI Hub
+  </div>
+  <ul class="nav-links" id="nav-links">
+    <li><a onclick="showPage('home')">Home</a></li>
+    <li><a onclick="showPage('marketplace')">Marketplace</a></li>
+    <li><a onclick="showPage('dashboard')">Dashboard</a></li>
+    <li><a onclick="showPage('sell')">Sell</a></li>
+    <li><a onclick="showPage('admin')">Admin</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="btn btn-ghost" onclick="showPage('auth')">Log In</button>
+    <button class="btn btn-primary" onclick="showPage('auth')">Get Started</button>
+    <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <a onclick="showPage('home');toggleMobileNav()">🏠 Home</a>
+  <a onclick="showPage('marketplace');toggleMobileNav()">🛒 Marketplace</a>
+  <a onclick="showPage('dashboard');toggleMobileNav()">⚡ Dashboard</a>
+  <a onclick="showPage('sell');toggleMobileNav()">💼 Sell</a>
+  <a onclick="showPage('admin');toggleMobileNav()">🔧 Admin</a>
+  <button class="btn btn-primary" style="margin-top:1rem;" onclick="showPage('auth');toggleMobileNav()">Get Started</button>
+</div>
+
+<!-- ===================== HOME PAGE ===================== -->
+<div id="home" class="page active">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-badge"><div class="badge-dot"></div> Powered by Advanced AI • Now in Beta</div>
+      <h1>CREATE & SELL<br><span class="gradient-text" style="animation:neonFlicker 8s ease-in-out infinite;">WITH AI</span></h1>
+      <div class="typing-wrapper">
+        <span class="typing-prefix">Generate </span>
+        <span id="typed-text">Blog Posts</span><span class="cursor"></span>
+      </div>
+      <p class="hero-desc">The world's first AI-powered micro-service marketplace. Create stunning content with AI and sell it to thousands of buyers. Zero experience needed — just your ideas.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary btn-lg" onclick="showPage('dashboard')">⚡ Start Creating</button>
+        <button class="btn btn-ghost btn-lg" onclick="showPage('marketplace')">🛒 Explore Marketplace</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num" data-target="50000">0</span>
+          <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="2000000">0</span>
+          <div class="stat-label">AI Generations</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="420000">0</span>
+          <div class="stat-label">Creator Earnings $</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" data-target="350">0</span>
+          <div class="stat-label">AI Services</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section>
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// Core Features</span>
+        <h2 class="section-title">Why <span style="color:var(--cyan)">MicroAI Hub</span>?</h2>
+        <p class="section-desc">Everything you need to build, sell, and scale your AI-powered content business.</p>
+      </div>
+      <div class="features-grid reveal">
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <div class="feature-title">10+ AI Tools</div>
+          <div class="feature-desc">From blog posts to brand slogans — our suite of specialized AI tools covers every content need imaginable.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💎</div>
+          <div class="feature-title">Instant Marketplace</div>
+          <div class="feature-desc">List your AI-generated services in minutes. Reach thousands of buyers looking for premium digital content.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Credit System</div>
+          <div class="feature-desc">Transparent, fair pricing with our credit system. Buy only what you need, earn credits by selling.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-title">Enterprise Security</div>
+          <div class="feature-desc">Bank-grade encryption, secure payments, and full compliance with GDPR and international data laws.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title">Analytics Dashboard</div>
+          <div class="feature-desc">Real-time insights into your performance, earnings, and marketplace trends — all in one futuristic dashboard.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <div class="feature-title">Global Community</div>
+          <div class="feature-desc">Join 50,000+ creators from 120+ countries. Collaborate, grow, and earn on the world's leading AI marketplace.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI TOOLS SHOWCASE -->
+  <section style="background:rgba(10,15,30,0.5); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// AI Arsenal</span>
+        <h2 class="section-title">10 Powerful <span style="color:var(--purple)">AI Tools</span></h2>
+        <p class="section-desc">Professional-grade AI generators for every content type. Built for speed, quality, and results.</p>
+      </div>
+      <div class="tools-showcase reveal">
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>📝</span> Blog Writer</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>📄</span> Resume Builder</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>📢</span> Ad Copy Gen</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>🛍️</span> Product Desc</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>📱</span> Social Media</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>🎨</span> Logo Prompts</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>📧</span> Email Sequences</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>💡</span> Brand Slogans</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>🎬</span> YT Scripts</div>
+        <div class="tool-chip" onclick="showPage('dashboard')"><span>🔍</span> SEO Meta</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// Process</span>
+        <h2 class="section-title">How It <span style="color:var(--cyan)">Works</span></h2>
+      </div>
+      <div class="steps-grid reveal">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-title">Create Account</div>
+          <div class="step-desc">Sign up in 30 seconds. Choose your role — creator, buyer, or both. No credit card required.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-title">Generate with AI</div>
+          <div class="step-desc">Pick any AI tool, enter your prompt, and watch our AI create stunning content in seconds.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-title">List Your Service</div>
+          <div class="step-desc">Package your AI skills into a sellable service. Set your price and publish to the marketplace.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <div class="step-title">Earn & Scale</div>
+          <div class="step-desc">Get paid instantly when buyers purchase. Track earnings, grow your reputation, and scale your income.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section style="background:rgba(10,15,30,0.5); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// Pricing</span>
+        <h2 class="section-title">Simple, Transparent <span style="color:var(--purple)">Pricing</span></h2>
+        <p class="section-desc">Start free, scale as you grow. No hidden fees, ever.</p>
+      </div>
+      <div class="pricing-grid reveal">
+        <div class="pricing-card">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price"><span>$</span>0<sub>/mo</sub></div>
+          <div class="plan-desc">Perfect for exploring AI content creation</div>
+          <ul class="plan-features">
+            <li>50 AI Credits/month</li>
+            <li>5 AI Tools Access</li>
+            <li>Basic Marketplace Listing</li>
+            <li>5% Transaction Fee</li>
+            <li>Community Support</li>
+          </ul>
+          <button class="btn btn-ghost" style="width:100%" onclick="showPage('auth')">Get Started Free</button>
+        </div>
+        <div class="pricing-card featured">
+          <div class="plan-name">Pro Creator</div>
+          <div class="plan-price"><span>$</span>29<sub>/mo</sub></div>
+          <div class="plan-desc">For serious creators building a real income</div>
+          <ul class="plan-features">
+            <li>500 AI Credits/month</li>
+            <li>All 10 AI Tools</li>
+            <li>Priority Marketplace Placement</li>
+            <li>2% Transaction Fee</li>
+            <li>Analytics Dashboard</li>
+            <li>Priority Support</li>
+            <li>Custom Service Branding</li>
+          </ul>
+          <button class="btn btn-primary" style="width:100%" onclick="showPage('auth')">Start Pro Trial</button>
+        </div>
+        <div class="pricing-card">
+          <div class="plan-name">Agency</div>
+          <div class="plan-price"><span>$</span>99<sub>/mo</sub></div>
+          <div class="plan-desc">For teams and high-volume businesses</div>
+          <ul class="plan-features">
+            <li>Unlimited AI Credits</li>
+            <li>All Tools + API Access</li>
+            <li>Featured Marketplace Slots</li>
+            <li>0% Transaction Fee</li>
+            <li>White-label Options</li>
+            <li>Dedicated Account Manager</li>
+            <li>Advanced Analytics</li>
+          </ul>
+          <button class="btn btn-purple" style="width:100%" onclick="showPage('auth')">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section>
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// Social Proof</span>
+        <h2 class="section-title">Loved by <span style="color:var(--cyan)">Creators</span></h2>
+      </div>
+      <div class="testimonials-grid reveal">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-text">"I went from zero to $3,200/month in just 6 weeks using MicroAI Hub. The AI tools are insanely powerful and the marketplace has tons of buyers. This is the future of freelancing."</div>
+          <div class="testimonial-author">
+            <div class="author-avatar">👩</div>
+            <div>
+              <div class="author-name">Sarah Kim</div>
+              <div class="author-role">Content Creator, Seoul</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-text">"The blog writer tool alone paid for my subscription 10x over. I've generated 400+ articles and sold them all. The quality is genuinely incredible."</div>
+          <div class="testimonial-author">
+            <div class="author-avatar">👨</div>
+            <div>
+              <div class="author-name">Marcus Rodriguez</div>
+              <div class="author-role">Digital Marketer, Miami</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <div class="testimonial-text">"As a small agency, MicroAI Hub is our secret weapon. We use it for client ad copy, social posts, and emails. Our output has tripled at a fraction of the cost."</div>
+          <div class="testimonial-author">
+            <div class="author-avatar">👩</div>
+            <div>
+              <div class="author-name">Priya Sharma</div>
+              <div class="author-role">Agency Owner, London</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section style="background:rgba(10,15,30,0.5); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-tag">// FAQ</span>
+        <h2 class="section-title">Frequently Asked <span style="color:var(--purple)">Questions</span></h2>
+      </div>
+      <div class="faq-list reveal">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">What AI models power MicroAI Hub? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">MicroAI Hub is powered by a combination of the latest large language models, fine-tuned specifically for content creation tasks. Our proprietary optimization layer ensures outputs are always high-quality, unique, and ready to use.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Do I own the content AI generates for me? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">Yes, 100%. Any content generated using your credits is entirely yours. You can use it, sell it, modify it, or publish it under your own name. We claim no rights over your generated content.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">How does the credit system work? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">Each AI generation uses a certain number of credits depending on the tool and output length. Credits are replenished monthly based on your plan, or you can purchase additional credit packs at any time. Credits never expire on paid plans.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">How do payouts work for sellers? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">When a buyer purchases your service, the payment is held for 48 hours (buyer protection), then released to your wallet. You can withdraw to PayPal, Stripe, or crypto at any time with a minimum of $20.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Is there a free trial? <span class="faq-arrow">▼</span></div>
+          <div class="faq-a">Absolutely! Our Starter plan is free forever with 50 credits/month. For Pro features, we offer a 14-day free trial with no credit card required. Cancel anytime during the trial with no charges.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER CTA -->
+  <section style="text-align:center;">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-tag">// Get Started Now</span>
+        <h2 class="section-title" style="margin-bottom:1rem;">Ready to <span style="color:var(--cyan)">Transform</span> Your Income?</h2>
+        <p class="section-desc" style="margin-bottom:2rem;">Join 50,000+ creators already earning with AI. Start free, no credit card required.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-lg" onclick="showPage('auth')">⚡ Start Free Today</button>
+          <button class="btn btn-ghost btn-lg" onclick="showPage('marketplace')">🛒 Browse Marketplace</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:1rem;"><div class="nav-logo-icon" style="width:28px;height:28px;font-size:14px;">⬡</div>MicroAI Hub</div>
+        <p class="footer-desc">The world's most advanced AI marketplace. Create, sell, and grow your digital business with the power of artificial intelligence.</p>
+        <div class="social-links">
+          <a class="social-btn">𝕏</a>
+          <a class="social-btn">in</a>
+          <a class="social-btn">▶</a>
+          <a class="social-btn">◉</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a onclick="showPage('marketplace')">Marketplace</a></li>
+          <li><a onclick="showPage('dashboard')">AI Tools</a></li>
+          <li><a onclick="showPage('sell')">Sell Services</a></li>
+          <li><a>API Access</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a>About Us</a></li>
+          <li><a>Careers</a></li>
+          <li><a>Blog</a></li>
+          <li><a>Press Kit</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Newsletter</h4>
+        <p style="font-size:0.85rem;color:var(--text2);margin-bottom:0.5rem;">Get AI tips & platform updates weekly.</p>
+        <div class="newsletter-form">
+          your@email.com" type="email">
+          <button class="btn btn-primary btn-sm" onclick="showToast('Subscribed! 🎉','success')">→</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 MicroAI Hub. All rights reserved.</span>
+      <span style="color:var(--cyan);font-family:var(--font-mono);font-size:0.75rem;">v2.4.1 — ONLINE</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ===================== AUTH PAGE ===================== -->
+<div id="auth" class="page">
+  <div style="position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 2rem 3rem;">
+    <div class="auth-card glow-border">
+      <div class="auth-title">Welcome to <span style="color:var(--cyan)">MicroAI</span></div>
+      <div class="auth-subtitle">The future of AI-powered content creation</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login',this)">Sign In</button>
+        <button class="auth-tab" onclick="switchAuthTab('register',this)">Register</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="login" class="auth-form active">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          you@example.com" id="login-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" placeholder="••••••••" id="login-password">
+        </div>
+        <div class="form-row">
+          <label class="form-check"><input type="checkbox" id="remember"> Remember me</label>
+          <a class="forgot-link" onclick="showToast('Password reset link sent!','info')">Forgot password?</a>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:0.8rem;" onclick="handleLogin()">
+          Sign In to Dashboard
+        </button>
+        <div class="auth-divider"><span>or continue with</span></div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="handleLogin()">🔷 Google</button>
+          <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="handleLogin()">⬛ GitHub</button>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register" class="auth-form">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" placeholder="John Doe" id="reg-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          you@example.com" id="reg-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="form-input" type="password" placeholder="Create strong password" id="reg-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">I am a...</label>
+          <select class="form-select" id="reg-role">
+            <option value="creator">AI Content Creator</option>
+            <option value="buyer">Service Buyer</option>
+            <option value="both">Both — Creator & Buyer</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-check"><input type="checkbox" id="terms"> I agree to Terms &amp; Privacy Policy</label>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:0.8rem;" onclick="handleRegister()">
+          Create Free Account ⚡
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DASHBOARD PAGE ===================== -->
+<div id="dashboard" class="page">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-user">
+      <div class="user-avatar-big">🦾</div>
+      <div class="user-name" id="user-name-display">Alex Creator</div>
+      <div class="user-role">Pro Creator</div>
+      <div class="credit-bar">
+        <div class="credit-label"><span>Credits</span><span class="credit-num" id="credit-display">420</span></div>
+        <div class="credit-track"><div class="credit-fill" id="credit-fill" style="width:84%"></div></div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Overview</div>
+        <button class="sidebar-link active" onclick="showDashSection('overview',this)"><span class="sidebar-icon">📊</span>Dashboard</button>
+        <button class="sidebar-link" onclick="showDashSection('activity',this)"><span class="sidebar-icon">⚡</span>Activity Feed<span class="sidebar-badge">7</span></button>
+        <button class="sidebar-link" onclick="showDashSection('history',this)"><span class="sidebar-icon">🕒</span>Recent History</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">AI Tools</div>
+        <button class="sidebar-link" onclick="showDashSection('tools',this)"><span class="sidebar-icon">🧠</span>All Tools</button>
+        <button class="sidebar-link" onclick="openToolModal('blog')"><span class="sidebar-icon">📝</span>Blog Writer</button>
+        <button class="sidebar-link" onclick="openToolModal('resume')"><span class="sidebar-icon">📄</span>Resume Builder</button>
+        <button class="sidebar-link" onclick="openToolModal('adcopy')"><span class="sidebar-icon">📢</span>Ad Copy Gen</button>
+        <button class="sidebar-link" onclick="openToolModal('social')"><span class="sidebar-icon">📱</span>Social Media</button>
+        <button class="sidebar-link" onclick="openToolModal('email')"><span class="sidebar-icon">📧</span>Email Sequences</button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Earnings</div>
+        <button class="sidebar-link" onclick="showPage('sell')"><span class="sidebar-icon">💼</span>Sell Services</button>
+        <button class="sidebar-link"><span class="sidebar-icon">💰</span>Earnings: $1,240</button>
+        <button class="sidebar-link" onclick="showPage('marketplace')"><span class="sidebar-icon">🛒</span>Marketplace</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dash-main">
+    <div class="dash-header">
+      <div>
+        <div class="dash-greeting">Good morning, <span style="color:var(--cyan)" id="greeting-name">Alex</span> 👋</div>
+        <div class="dash-date" id="dash-date"></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn btn-primary btn-sm" onclick="showToast('500 credits added! 💎','success')">+ Buy Credits</button>
+        <div class="dash-notif" onclick="showToast('3 new notifications!','info')">🔔<div class="notif-dot"></div></div>
+      </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-icon">⚡</div><div class="stat-card-val" id="sc-gen">0</div><div class="stat-card-lbl">Generations</div><div class="stat-card-change">↑ +12 today</div></div>
+      <div class="stat-card"><div class="stat-card-icon">💎</div><div class="stat-card-val" id="sc-cred">0</div><div class="stat-card-lbl">Credits Left</div><div class="stat-card-change" style="color:var(--cyan)">84% remaining</div></div>
+      <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-val" id="sc-earn">$0</div><div class="stat-card-lbl">Earnings</div><div class="stat-card-change">↑ +$240 this week</div></div>
+      <div class="stat-card"><div class="stat-card-icon">🛒</div><div class="stat-card-val" id="sc-sales">0</div><div class="stat-card-lbl">Sales</div><div class="stat-card-change">↑ +3 today</div></div>
+    </div>
+
+    <div class="dash-content">
+      <!-- OVERVIEW SECTION -->
+      <div id="dash-overview" class="dash-section">
+        <div class="dash-section-header">
+          <div class="dash-section-title">// Quick Actions</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
+          <button class="tool-card-dash" onclick="openToolModal('blog')"><div class="tool-card-top"><span class="tool-icon-lg">📝</span><span class="tool-cost">5 CR</span></div><div class="tool-name">Blog Writer</div></button>
+          <button class="tool-card-dash" onclick="openToolModal('adcopy')"><div class="tool-card-top"><span class="tool-icon-lg">📢</span><span class="tool-cost">3 CR</span></div><div class="tool-name">Ad Copy</div></button>
+          <button class="tool-card-dash" onclick="openToolModal('social')"><div class="tool-card-top"><span class="tool-icon-lg">📱</span><span class="tool-cost">2 CR</span></div><div class="tool-name">Social Media</div></button>
+          <button class="tool-card-dash" onclick="openToolModal('email')"><div class="tool-card-top"><span class="tool-icon-lg">📧</span><span class="tool-cost">4 CR</span></div><div class="tool-name">Email Seq</div></button>
+          <button class="tool-card-dash" onclick="openToolModal('seo')"><div class="tool-card-top"><span class="tool-icon-lg">🔍</span><span class="tool-cost">3 CR</span></div><div class="tool-name">SEO Meta</div></button>
+        </div>
+        <div class="dash-section-header">
+          <div class="dash-section-title">// Recent Generations</div>
+          <button class="btn btn-ghost btn-sm" onclick="showDashSection('history',null)">View All</button>
+        </div>
+        <div id="recent-list" style="background:var(--glass);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="padding:1rem 1.5rem;text-align:center;color:var(--text2);font-size:0.85rem;font-family:var(--font-mono);">No generations yet. Use an AI tool to get started ⚡</div>
+        </div>
+      </div>
+
+      <!-- TOOLS SECTION -->
+      <div id="dash-tools" class="dash-section" style="display:none;">
+        <div class="dash-section-header">
+          <div class="dash-section-title">// All AI Tools</div>
+        </div>
+        <input class="tool-search" placeholder="🔍 Search tools..." oninput="filterTools(this.value)">
+        <div class="tools-grid-dash" id="tools-grid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- ACTIVITY SECTION -->
+      <div id="dash-activity" class="dash-section" style="display:none;">
+        <div class="dash-section-title" style="margin-bottom:1rem;">// Activity Feed</div>
+        <ul class="activity-list" id="activity-list">
+          <li class="activity-item"><div class="activity-icon">📝</div><div><div class="activity-text"><strong>Blog post generated</strong> — "10 AI Trends for 2025"</div><div class="activity-time">2 minutes ago</div></div></li>
+          <li class="activity-item"><div class="activity-icon">💰</div><div><div class="activity-text"><strong>Sale received!</strong> — SEO Blog Package × 1</div><div class="activity-time">18 minutes ago</div></div></li>
+          <li class="activity-item"><div class="activity-icon">⭐</div><div><div class="activity-text"><strong>New review</strong> — 5 stars from buyer @techstartup</div><div class="activity-time">1 hour ago</div></div></li>
+          <li class="activity-item"><div class="activity-icon">📢</div><div><div class="activity-text"><strong>Ad copy generated</strong> — Facebook campaign copy</div><div class="activity-time">3 hours ago</div></div></li>
+          <li class="activity-item"><div class="activity-icon">💎</div><div><div class="activity-text"><strong>Credits purchased</strong> — 100 credits added</div><div class="activity-time">Yesterday</div></div></li>
+          <li class="activity-item"><div class="activity-icon">🛒</div><div><div class="activity-text"><strong>New service listed</strong> — "Premium Blog Post Package"</div><div class="activity-time">2 days ago</div></div></li>
+        </ul>
+      </div>
+
+      <!-- HISTORY SECTION -->
+      <div id="dash-history" class="dash-section" style="display:none;">
+        <div class="dash-section-title" style="margin-bottom:1rem;">// Generation History</div>
+        <div id="history-list" style="background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:1.5rem;font-family:var(--font-mono);font-size:0.82rem;color:var(--text2);">
+          Loading history...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MARKETPLACE PAGE ===================== -->
+<div id="marketplace" class="page">
+  <div class="market-hero">
+    <div style="position:relative;z-index:2;">
+      <span class="section-tag">// AI Services Marketplace</span>
+      <h1 class="market-hero" style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,3rem);font-weight:900;margin-bottom:0.5rem;">Find the <span style="color:var(--cyan)">Perfect</span> AI Service</h1>
+      <p style="color:var(--text2);font-size:1rem;">350+ verified AI services from expert creators worldwide</p>
+    </div>
+  </div>
+  <div style="max-width:1200px;margin:0 auto;">
+    <div class="market-controls">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="market-search" placeholder="Search services..." oninput="filterServices(this.value)">
+      </div>
+      <select class="sort-select" onchange="sortServices(this.value)">
+        <option>Sort: Trending</option>
+        <option>Sort: Price Low</option>
+        <option>Sort: Price High</option>
+        <option>Sort: Top Rated</option>
+        <option>Sort: Newest</option>
+      </select>
+    </div>
+    <div class="category-filters">
+      <button class="cat-btn active" onclick="filterCat('all',this)">All Services</button>
+      <button class="cat-btn" onclick="filterCat('writing',this)">✍️ Writing</button>
+      <button class="cat-btn" onclick="filterCat('marketing',this)">📢 Marketing</button>
+      <button class="cat-btn" onclick="filterCat('social',this)">📱 Social</button>
+      <button class="cat-btn" onclick="filterCat('seo',this)">🔍 SEO</button>
+      <button class="cat-btn" onclick="filterCat('design',this)">🎨 Design</button>
+      <button class="cat-btn" onclick="filterCat('email',this)">📧 Email</button>
+    </div>
+  </div>
+  <!-- MARKETPLACE STATS -->
+  <div style="display:flex;gap:2rem;padding:0 2rem;max-width:1200px;margin:0 auto 1rem;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text2);"><span style="color:var(--cyan);font-family:var(--font-display);font-weight:700;">350+</span> Services</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text2);"><span style="color:var(--cyan);font-family:var(--font-display);font-weight:700;">2,840</span> Happy Buyers</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--text2);"><span style="color:var(--cyan);font-family:var(--font-display);font-weight:700;">98.7%</span> Satisfaction Rate</div>
+  </div>
+  <div class="services-grid" id="services-grid">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- ===================== SELL PAGE ===================== -->
+<div id="sell" class="page">
+  <div class="sell-header" style="position:relative;z-index:2;">
+    <span class="section-tag">// Creator Studio</span>
+    <h1 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;margin-bottom:0.5rem;">List Your <span style="color:var(--cyan)">AI Service</span></h1>
+    <p style="color:var(--text2);">Turn your AI skills into a profitable service in minutes</p>
+  </div>
+  <div class="sell-container" style="position:relative;z-index:2;">
+    <div class="sell-layout">
+      <!-- FORM -->
+      <div class="sell-form">
+        <div class="form-group">
+          <label class="form-label">Service Title</label>
+          <input class="form-input" id="sell-title" placeholder="e.g. Professional SEO Blog Post (1000+ words)" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="sell-cat" onchange="updatePreview()">
+            <option>Content Writing</option>
+            <option>Ad Copywriting</option>
+            <option>Social Media</option>
+            <option>SEO Services</option>
+            <option>Email Marketing</option>
+            <option>Resume Writing</option>
+            <option>Brand Identity</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="prompt-area" id="sell-desc" style="height:100px;" placeholder="Describe what buyers will receive..." oninput="updatePreview()"></textarea>
+          <button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="aiImproveDesc()">🤖 AI Improve Description</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Price ($)</label>
+            <input class="form-input" id="sell-price" type="number" value="15" min="5" max="500" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Delivery (days)</label>
+            <select class="form-select" id="sell-delivery">
+              <option>1 day</option>
+              <option>2 days</option>
+              <option>3 days</option>
+              <option>5 days</option>
+              <option>7 days</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tags-wrap" id="tags-wrap">
+            <div class="tag" onclick="removeTag(this)">AI Writing ✕</div>
+            <div class="tag" onclick="removeTag(this)">SEO ✕</div>
+            <div class="tag" onclick="removeTag(this)">Blog ✕</div>
+          </div>
+          <input class="form-input" style="margin-top:8px;" placeholder="Add tag and press Enter" onkeydown="addTag(event,this)" id="tag-input">
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:0.85rem;margin-top:0.5rem;" onclick="publishService()">
+          🚀 Publish Service
+        </button>
+      </div>
+
+      <!-- PREVIEW -->
+      <div class="sell-preview">
+        <div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.75rem;">// Live Preview</div>
+        <div class="preview-card">
+          <div class="preview-thumb">🧠</div>
+          <div class="preview-info">
+            <div class="preview-title" id="prev-title">Your Service Title</div>
+            <div class="preview-desc" id="prev-desc">Your service description will appear here...</div>
+            <div class="preview-meta">
+              <span id="prev-cat">Category</span>
+              <span id="prev-delivery">⚡ 1 day delivery</span>
+            </div>
+            <div class="preview-price" id="prev-price">$15</div>
+          </div>
+        </div>
+        <div class="earnings-est">
+          <div class="est-label">Estimated Monthly Earnings</div>
+          <div class="est-value" id="est-earnings">$0</div>
+          <div class="est-note">Based on 10 sales/month at your price (after 5% fee)</div>
+        </div>
+        <div style="margin-top:1rem;padding:1rem;background:var(--glass);border:1px solid var(--border);border-radius:12px;font-size:0.82rem;color:var(--text2);line-height:1.6;">
+          <span style="color:var(--cyan);font-family:var(--font-mono);">💡 Tips:</span><br>
+          • Use keywords buyers search for in your title<br>
+          • Describe exactly what files buyers receive<br>
+          • Price competitively to get your first 5 reviews
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN PAGE ===================== -->
+<div id="admin" class="page">
+  <div class="admin-sidebar">
+    <div class="admin-brand">
+      <div class="admin-brand-name">⚙ ADMIN PANEL</div>
+      <div class="admin-role">Super Administrator</div>
+    </div>
+    <div class="admin-link active" onclick="showAdminSection('overview',this)">📊 Overview</div>
+    <div class="admin-link" onclick="showAdminSection('users',this)">👥 User Management</div>
+    <div class="admin-link" onclick="showAdminSection('services',this)">🛒 Service Moderation</div>
+    <div class="admin-link" onclick="showAdminSection('analytics',this)">📈 Analytics</div>
+    <div class="admin-link" onclick="showAdminSection('credits',this)">💎 Credit System</div>
+    <div class="admin-link" onclick="showAdminSection('logs',this)">📋 Activity Logs</div>
+  </div>
+  <div class="admin-main">
+    <div class="admin-header">
+      <h2>Admin <span style="color:var(--pink)">Control Center</span></h2>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span style="font-family:var(--font-mono);font-size:0.72rem;color:var(--cyan);">● SYSTEM ONLINE</span>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('System backup complete','success')">🔄 Backup</button>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="admin-overview">
+      <div class="admin-stats">
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--cyan)">50,241</div><div class="admin-stat-lbl">Total Users</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:#22c55e">$84,200</div><div class="admin-stat-lbl">Monthly Revenue</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--purple)">2.1M</div><div class="admin-stat-lbl">AI Generations</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--pink)">352</div><div class="admin-stat-lbl">Active Services</div></div>
+      </div>
+      <div class="admin-content">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+          <div class="chart-area">
+            <div class="chart-title">// Revenue This Week ($)</div>
+            <div class="chart-bars" id="revenue-chart"></div>
+            <div style="display:flex;justify-content:space-around;font-family:var(--font-mono);font-size:0.65rem;color:var(--text2);margin-top:8px;">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+          </div>
+          <div class="chart-area">
+            <div class="chart-title">// New Users This Week</div>
+            <div class="chart-bars" id="users-chart"></div>
+            <div style="display:flex;justify-content:space-around;font-family:var(--font-mono);font-size:0.65rem;color:var(--text2);margin-top:8px;">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-area">
+          <div class="chart-title">// Live Activity Log</div>
+          <div class="admin-log" id="admin-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS TABLE -->
+    <div id="admin-users" style="display:none;padding:2rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div style="font-family:var(--font-display);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);">// User Management</div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('User export started','info')">⬇ Export CSV</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Credits</th><th>Earnings</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="users-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SERVICES TABLE -->
+    <div id="admin-services" style="display:none;padding:2rem;">
+      <div style="font-family:var(--font-display);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:1rem;">// Service Moderation</div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Service</th><th>Seller</th><th>Price</th><th>Sales</th><th>Rating</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="services-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="admin-analytics" style="display:none;padding:2rem;">
+      <div style="font-family:var(--font-display);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:1.5rem;">// Platform Analytics</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--cyan)">4.8min</div><div class="admin-stat-lbl">Avg Session</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:#22c55e">68.4%</div><div class="admin-stat-lbl">Conversion Rate</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--purple)">$16.74</div><div class="admin-stat-lbl">Avg Order Value</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--pink)">42%</div><div class="admin-stat-lbl">Repeat Buyers</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--cyan)">120+</div><div class="admin-stat-lbl">Countries</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:#22c55e">98.7%</div><div class="admin-stat-lbl">Uptime</div></div>
+      </div>
+    </div>
+
+    <!-- CREDITS -->
+    <div id="admin-credits" style="display:none;padding:2rem;">
+      <div style="font-family:var(--font-display);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:1.5rem;">// Credit System</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--cyan)">2.1M</div><div class="admin-stat-lbl">Credits Issued</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:var(--purple)">1.8M</div><div class="admin-stat-lbl">Credits Used</div></div>
+        <div class="admin-stat"><div class="admin-stat-val" style="color:#22c55e">300K</div><div class="admin-stat-lbl">Credits Balance</div></div>
+      </div>
+      <div class="chart-area">
+        <div class="chart-title">// Manual Credit Management</div>
+        <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+          
+User ID
+user@email.com" style="width:200px;">
+
+          <div><label class="form-label" style="display:block;margin-bottom:6px;">Amount</label><input class="form-input" type="number" placeholder="100" style="width:120px;"></div>
+          <button class="btn btn-primary" onclick="showToast('Credits added successfully!','success')">Add Credits</button>
+          <button class="btn btn-ghost" onclick="showToast('Credits deducted','info')">Deduct Credits</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div id="admin-logs" style="display:none;padding:2rem;">
+      <div style="font-family:var(--font-display);font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:1rem;">// System Logs</div>
+      <div class="admin-log" style="height:400px;" id="full-log"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOOL MODAL ===================== -->
+<div class="modal-overlay" id="tool-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-tool-title">Tool Name</div>
+        <div style="font-size:0.75rem;color:var(--text2);font-family:var(--font-mono);margin-top:2px;" id="modal-tool-cost">Cost: 5 credits</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="prompt-label">Your Prompt</label>
+      <textarea class="prompt-area" id="modal-prompt" placeholder="Describe what you want to generate..."></textarea>
+      <div id="generating" style="display:none;" class="generating-anim">
+        <span>🧠 AI Generating</span>
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+      <div class="output-box" id="modal-output"></div>
+      <div class="output-actions" id="output-actions" style="display:none;">
+        <button class="btn btn-ghost btn-sm" onclick="copyOutput()">📋 Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="downloadOutput()">⬇ Download</button>
+        <button class="btn btn-primary btn-sm" onclick="showPage('sell')">🛒 Sell This</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="generateContent()" id="gen-btn">⚡ Generate</button>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICE MODAL -->
+<div class="modal-overlay" id="service-modal">
+  <div class="modal" style="max-width:540px;">
+    <div class="modal-header">
+      <div class="modal-title" id="svc-modal-title">Service Name</div>
+      <button class="modal-close" onclick="closeServiceModal()">✕</button>
+    </div>
+    <div class="modal-body" id="svc-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeServiceModal()">Close</button>
+      <button class="btn btn-primary" onclick="purchaseService()" id="purchase-btn">🛒 Purchase Now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== STATE =====================
+let state = {
+  currentPage: 'home',
+  credits: 420,
+  maxCredits: 500,
+  generations: 47,
+  earnings: 1240,
+  sales: 28,
+  history: [],
+  currentTool: null,
+  user: { name: 'Alex Creator', email: 'alex@example.com', role: 'Pro Creator' }
+};
+
+// Save to localStorage
+function saveState() {
+  try { localStorage.setItem('microai_state', JSON.stringify(state)); } catch(e) {}
+}
+function loadState() {
+  try {
+    const saved = localStorage.getItem('microai_state');
+    if (saved) { const s = JSON.parse(saved); state = {...state, ...s}; }
+  } catch(e) {}
+}
+loadState();
+
+// ===================== PARTICLES =====================
+function createParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random()*100}%;
+      animation-duration: ${8+Math.random()*12}s;
+      animation-delay: ${Math.random()*10}s;
+      --drift: ${(Math.random()-0.5)*200}px;
+      background: ${Math.random()>0.5?'var(--cyan)':'var(--purple)'};
+      width: ${1+Math.random()*3}px;
+      height: ${1+Math.random()*3}px;
+    `;
+    container.appendChild(p);
+  }
+}
+createParticles();
+
+// ===================== TYPING ANIMATION =====================
+const typingTexts = ['Blog Posts','Logo Designs','Ad Copy','Product Descriptions','Social Content','Resume Writing','Email Sequences','Brand Slogans'];
+let typeIdx = 0, charIdx = 0, isDeleting = false;
+function typeWriter() {
+  const el = document.getElementById('typed-text');
+  if (!el) return;
+  const current = typingTexts[typeIdx];
+  if (isDeleting) {
+    el.textContent = current.substring(0, charIdx-1);
+    charIdx--;
+  } else {
+    el.textContent = current.substring(0, charIdx+1);
+    charIdx++;
+  }
+  let speed = isDeleting ? 60 : 110;
+  if (!isDeleting && charIdx === current.length) { speed = 1800; isDeleting = true; }
+  else if (isDeleting && charIdx === 0) { isDeleting = false; typeIdx = (typeIdx+1)%typingTexts.length; speed = 300; }
+  setTimeout(typeWriter, speed);
+}
+typeWriter();
+
+// ===================== STAT COUNTERS =====================
+function animateCounters() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    let current = 0;
+    const step = target / 80;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = target > 1000 ? (current >= 1000000 ? (current/1000000).toFixed(1)+'M+' : current >= 1000 ? Math.floor(current/1000)+'K+' : Math.floor(current)+'+') : Math.floor(current)+'+';
+      if (current >= target) clearInterval(timer);
+    }, 20);
+  });
+}
+
+// ===================== NAVBAR SCROLL =====================
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ===================== REVEAL ANIMATIONS =====================
+function initReveal() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+setTimeout(initReveal, 100);
+
+// ===================== PAGE ROUTING =====================
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = 'none'; });
+  const el = document.getElementById(page);
+  if (!el) return;
+  el.style.display = '';
+  el.classList.add('active');
+  state.currentPage = page;
+  window.scrollTo(0,0);
+  if (page === 'home') { setTimeout(animateCounters, 300); setTimeout(initReveal, 200); }
+  if (page === 'dashboard') { initDashboard(); el.style.display = 'grid'; el.classList.add('active'); }
+  if (page === 'marketplace') { renderMarketplace(); }
+  if (page === 'admin') { el.style.display = 'grid'; el.classList.add('active'); initAdmin(); }
+  if (page === 'sell') { updatePreview(); }
+}
+
+// ===================== MOBILE NAV =====================
+function toggleMobileNav() {
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+
+// ===================== AUTH =====================
+function switchAuthTab(tab, btn) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tab).classList.add('active');
+}
+function handleLogin() {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-password').value;
+  if (!email || !pass) { showToast('Please fill all fields','error'); return; }
+  showToast('Authenticating...','info');
+  setTimeout(() => { showToast('Welcome back! 🎉','success'); showPage('dashboard'); }, 1200);
+}
+function handleRegister() {
+  const name = document.getElementById('reg-name').value;
+  const email = document.getElementById('reg-email').value;
+  const pass = document.getElementById('reg-password').value;
+  const terms = document.getElementById('terms').checked;
+  if (!name || !email || !pass) { showToast('Please fill all fields','error'); return; }
+  if (!terms) { showToast('Please accept terms','error'); return; }
+  state.user.name = name; state.user.email = email;
+  showToast('Creating account...','info');
+  setTimeout(() => { showToast('Account created! Welcome 🚀','success'); showPage('dashboard'); }, 1400);
+}
+
+// ===================== FAQ =====================
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+// ===================== TOAST =====================
+function showToast(msg, type='info') {
+  const c = document.getElementById('toast-container');
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 3000);
+}
+
+// ===================== DASHBOARD =====================
+const TOOLS = [
+  { id:'blog', icon:'📝', name:'Blog Writer', cost:5, desc:'Generate full SEO-optimized blog posts with H1, H2, intro, body, and conclusion.' },
+  { id:'resume', icon:'📄', name:'Resume Builder', cost:8, desc:'Create professional ATS-friendly resumes tailored for any job role.' },
+  { id:'adcopy', icon:'📢', name:'Ad Copy Generator', cost:3, desc:'Write converting Facebook, Google, and Instagram ad copy in seconds.' },
+  { id:'product', icon:'🛍️', name:'Product Description', cost:2, desc:'Generate compelling e-commerce product descriptions that sell.' },
+  { id:'social', icon:'📱', name:'Social Media Generator', cost:2, desc:'Create viral-worthy posts for Instagram, Twitter, LinkedIn, and TikTok.' },
+  { id:'logo', icon:'🎨', name:'Logo Prompt Generator', cost:4, desc:'Generate detailed prompts for AI image tools to create logo concepts.' },
+  { id:'email', icon:'📧', name:'Email Sequence Generator', cost:6, desc:'Build full email drip campaigns, welcome sequences, and nurture flows.' },
+  { id:'slogan', icon:'💡', name:'Brand Slogan Generator', cost:3, desc:'Create memorable, catchy brand slogans and taglines for any business.' },
+  { id:'youtube', icon:'🎬', name:'YouTube Script Generator', cost:7, desc:'Write engaging YouTube video scripts with hooks, structure, and CTAs.' },
+  { id:'seo', icon:'🔍', name:'SEO Meta Generator', cost:2, desc:'Generate optimized title tags, meta descriptions, and schema markup.' }
+];
+
+const AI_RESPONSES = {
+  blog: (p) => `# ${p || 'The Future of AI Content Creation'}\n\n## Introduction\nIn today's rapidly evolving digital landscape, artificial intelligence is revolutionizing how we create, consume, and monetize content. From small creators to Fortune 500 companies, AI-powered writing tools are becoming indispensable.\n\n## Why AI Content Matters\nThe global content marketing industry is valued at over $400 billion. AI tools can produce high-quality, SEO-optimized content in minutes — what used to take hours. Businesses using AI content report a **340% increase in output** with only a **60% increase in cost**.\n\n## Key Benefits\n- **Speed**: Generate 1,000-word articles in under 30 seconds\n- **SEO Optimization**: Built-in keyword density and semantic analysis\n- **Scalability**: Create unlimited variations for A/B testing\n- **Consistency**: Maintain brand voice across all content\n\n## Conclusion\nAI content creation is not a replacement for human creativity — it's an amplifier. The creators who embrace AI today will dominate their niches tomorrow. Start creating with AI and scale your content business to new heights.`,
+  resume: (p) => `ALEX JOHNSON | Senior Software Engineer\n📧 alex@example.com | 📱 +1 (555) 0100 | 🔗 linkedin.com/in/alexjohnson\n\n━━━ PROFESSIONAL SUMMARY ━━━\nResults-driven Software Engineer with 6+ years building scalable web applications. Expert in React, Node.js, and cloud architecture. Led teams of 8+ engineers, delivered 15+ production systems serving 1M+ users.\n\n━━━ EXPERIENCE ━━━\nSenior Software Engineer | TechCorp Inc. | 2021–Present\n• Architected microservices platform reducing latency by 65%\n• Led migration to AWS, saving $180K/year in infrastructure\n• Mentored 4 junior developers, all promoted within 18 months\n\nSoftware Engineer | StartupXYZ | 2019–2021\n• Built real-time dashboard serving 500K daily active users\n• Reduced app load time by 78% through optimization\n\n━━━ SKILLS ━━━\nLanguages: JavaScript, TypeScript, Python, Go\nFrameworks: React, Next.js, Node.js, Express\nCloud: AWS, GCP, Kubernetes, Docker\n\n━━━ EDUCATION ━━━\nB.S. Computer Science | MIT | 2019 | GPA: 3.9`,
+  adcopy: (p) => `🎯 FACEBOOK AD COPY — ${p || 'AI Marketing Tool'}\n\n📌 HEADLINE OPTIONS:\n1. "Stop Wasting Hours Writing Content — Let AI Do It"\n2. "50,000 Creators Can't Be Wrong — Try MicroAI Free"\n3. "Generate 30 Blog Posts While You Sleep"\n\n📝 PRIMARY TEXT:\nTired of staring at a blank page for hours?\n\nMicroAI Hub helps creators like YOU generate professional blog posts, ad copy, and social content in SECONDS — not hours.\n\n✅ 10 AI tools in one platform\n✅ Used by 50,000+ creators globally\n✅ Start free — no credit card needed\n\nJoin today and generate your first piece of AI content FREE.\n\n🔗 CTA: "Start Creating for Free →"\n\n📊 TARGETING: Ages 25-45 | Entrepreneurs, Freelancers, Content Creators | Interests: Digital Marketing, Freelancing`,
+  social: (p) => `📱 INSTAGRAM CAPTION PACK — ${p || 'AI Business'}\n\n1️⃣ ENGAGEMENT POST:\n"Hot take: The creators who use AI tools TODAY will dominate every niche by 2026. 🔥\n\nWhile everyone debates whether AI is good or bad, smart creators are already using it to:\n→ Write 10x more content\n→ Land 3x more clients\n→ Earn passive income 24/7\n\nThe future belongs to those who adapt. Are you ready? 👇\n\n#AIContent #ContentCreator #FutureOfWork #AITools"\n\n2️⃣ VALUE POST:\n"3 AI tools that will replace your VA (and cost 90% less):\n1. MicroAI Blog Writer → $0.02/post\n2. AI Ad Copy Gen → Converts at 5.8%\n3. Email Sequence AI → 47% open rates\n\nSave this post. Thank me later. 📌"\n\n3️⃣ STORY IDEAS:\n• Poll: "Do you use AI in your business?"\n• Q&A: "Ask me anything about AI content"\n• Behind the scenes: "Generating 20 posts in 5 minutes"`,
+  email: (p) => `📧 5-PART EMAIL WELCOME SEQUENCE\n\nEMAIL 1 (Day 0 — Welcome)\nSubject: You're in! Here's your first step 🎉\nHey [First Name],\nWelcome to MicroAI Hub! You just made the best decision for your content business.\nIn the next 5 days, I'll show you exactly how to generate your first income with AI.\nToday's task: Log in and run your first generation (it's free!).\n→ [Start Now Button]\n\nEMAIL 2 (Day 1 — Quick Win)\nSubject: Generate your first piece of content today\n...\n\nEMAIL 3 (Day 3 — Case Study)\nSubject: How Sarah made $3,200 in 6 weeks\n...\n\nEMAIL 4 (Day 5 — Upgrade)\nSubject: Ready to unlock unlimited AI power?\n...\n\nEMAIL 5 (Day 7 — FOMO)\nSubject: Last chance for your 14-day Pro trial\n...`,
+  product: (p) => `🛍️ PRODUCT DESCRIPTION — ${p || 'Premium AI Writing Tool'}\n\n**Transform Your Content Game with MicroAI Pro** ⚡\n\nStop spending hours creating mediocre content. MicroAI Pro is the AI writing powerhouse that creates professional-grade blog posts, ad copy, and social content in seconds.\n\n**What You Get:**\n• 10 specialized AI content generators\n• 500 monthly AI credits (worth $250+)\n• Priority marketplace placement\n• Custom brand voice settings\n• Advanced analytics dashboard\n\n**Why Creators Love It:**\n★★★★★ "I generated $8,400 in my first month" — @techcreator\n★★★★★ "Best AI tool I've ever used, period." — @marketingpro\n★★★★★ "Paid for itself 50x over." — @contentking\n\n**Perfect For:** Freelancers, agencies, content marketers, e-commerce sellers\n\n🔒 14-day money-back guarantee. No questions asked.`,
+  logo: (p) => `🎨 LOGO PROMPT PACK — ${p || 'AI Tech Startup'}\n\n MIDJOURNEY/DALL-E PROMPTS:\n\n1. "Minimalist tech startup logo, hexagonal neural network symbol, electric cyan and deep purple gradient, clean sans-serif wordmark 'MICROAI', dark background, professional, scalable vector style, --ar 1:1 --style raw"\n\n2. "Futuristic AI company emblem, abstract brain formed from geometric lines, neon cyan glow, cyberpunk aesthetic, dark navy background, ultra sharp, logo design, white space, professional branding"\n\n3. "Modern SaaS logo mark, infinity loop merged with circuit pattern, gradient from #00F5FF to #8B5CF6, minimal clean, on black, vector art, brand identity"\n\n4. "3D render AI logo, chrome sphere with data streams, floating in dark space, purple ambient lighting, product render quality"\n\n💡 COLOR CODES:\nPrimary: #00F5FF (Electric Cyan)\nSecondary: #8B5CF6 (Deep Purple)\nAccent: #FF00AA (Neon Pink)\nBackground: #030712 (Deep Black)`,
+  slogan: (p) => `💡 BRAND SLOGAN PACK — ${p || 'AI Platform'}\n\n🏆 TOP PICKS:\n1. "Create More. Earn More. Worry Less." — Benefit-focused, memorable\n2. "Your AI. Your Empire." — Power + ownership\n3. "Intelligence at the Speed of Thought." — Premium, aspirational\n4. "Where Ideas Meet AI." — Simple, universal\n5. "Build Your Content Empire with AI." — Action-oriented\n\n🎯 NICHE VARIATIONS:\nFor Creators: "The Creator's Unfair Advantage"\nFor Agencies: "Scale Without Limits"\nFor Freelancers: "Your 24/7 AI Team"\nFor Marketers: "Marketing That Writes Itself"\n\n📣 TAGLINE OPTIONS:\n• "50,000 creators. Infinite possibilities."\n• "Powered by AI. Driven by you."\n• "From idea to income — in seconds."`,
+  youtube: (p) => `🎬 YOUTUBE SCRIPT — ${p || 'How to Make Money with AI'}\n\n[HOOK — 0-15 seconds]\n"I made $3,200 in ONE month using AI tools — and I only worked 4 hours a day. Today I'm going to show you exactly how, step by step. Stay until the end because I'm giving away my exact prompt templates for FREE."\n\n[INTRO — 15-45 seconds]\n"Hey what's up everyone, welcome back to the channel! If you're new here, I'm [Name], and I help creators build real income online with AI tools. If that's your thing, smash that subscribe button right now."\n\n[MAIN CONTENT — 45s-8min]\nSection 1: The AI Tool Stack I Use (1:00)\n• Show MicroAI Hub dashboard\n• Demonstrate Blog Writer tool\n\nSection 2: My Exact Workflow (3:00)\n• Step 1: Topic research (2 min)\n• Step 2: AI generation (30 sec)\n• Step 3: Edit and publish (10 min)\n\nSection 3: Monetization Strategy (6:00)\n• Marketplace listings\n• Repeat clients\n\n[OUTRO & CTA]\n"Link in the description for the free prompt templates. Like, subscribe, and I'll see you in the next one!"`,
+  seo: (p) => `🔍 SEO META PACKAGE — ${p || 'AI Tools Website'}\n\n━━━ TITLE TAGS ━━━\nPrimary: "MicroAI Hub — AI Content Generator & Marketplace | Create & Earn"\n(60 chars)\n\nAlternate: "Best AI Writing Tool 2025 — Blog Posts, Ad Copy & More"\n\n━━━ META DESCRIPTIONS ━━━\nPrimary: "Generate professional blog posts, ad copy, and social content with AI in seconds. Join 50,000+ creators earning on MicroAI Hub's AI marketplace. Start free today."\n(158 chars — optimal!)\n\n━━━ SCHEMA MARKUP ━━━\n{\n  "@context": "schema.org",\n  "@type": "SoftwareApplication",\n  "name": "MicroAI Hub",\n  "applicationCategory": "BusinessApplication",\n  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "2847" },\n  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }\n}\n\n━━━ TARGET KEYWORDS ━━━\nPrimary: "AI content generator" (22K/mo)\nSecondary: "AI writing tool" (18K/mo)\nLong-tail: "AI blog post generator free" (5K/mo)`
+};
+
+function initDashboard() {
+  // Update user display
+  document.getElementById('user-name-display').textContent = state.user.name;
+  document.getElementById('greeting-name').textContent = state.user.name.split(' ')[0];
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // Animate stats
+  animateDashStat('sc-gen', state.generations, '');
+  animateDashStat('sc-cred', state.credits, '');
+  animateDashStat('sc-earn', state.earnings, '$');
+  animateDashStat('sc-sales', state.sales, '');
+  document.getElementById('credit-fill').style.width = `${(state.credits/state.maxCredits)*100}%`;
+  document.getElementById('credit-display').textContent = state.credits;
+  // Render tools grid
+  renderToolsGrid();
+  // Render history
+  renderHistory();
+}
+
+function animateDashStat(id, target, prefix) {
+  const el = document.getElementById(id);
+  let current = 0; const step = target/40;
+  const t = setInterval(() => {
+    current = Math.min(current+step, target);
+    el.textContent = prefix + Math.floor(current).toLocaleString();
+    if (current >= target) clearInterval(t);
+  }, 25);
+}
+
+function renderToolsGrid() {
+  const grid = document.getElementById('tools-grid');
+  if (!grid) return;
+  grid.innerHTML = TOOLS.map(t => `
+    <div class="tool-card-dash" onclick="openToolModal('${t.id}')">
+      <div class="tool-card-top"><span class="tool-icon-lg">${t.icon}</span><span class="tool-cost">${t.cost} CR</span></div>
+      <div class="tool-name">${t.name}</div>
+      <div class="tool-desc">${t.desc}</div>
+    </div>
+  `).join('');
+}
+
+function filterTools(q) {
+  const filtered = TOOLS.filter(t => t.name.toLowerCase().includes(q.toLowerCase()) || t.desc.toLowerCase().includes(q.toLowerCase()));
+  const grid = document.getElementById('tools-grid');
+  if (!grid) return;
+  grid.innerHTML = filtered.map(t => `
+    <div class="tool-card-dash" onclick="openToolModal('${t.id}')">
+      <div class="tool-card-top"><span class="tool-icon-lg">${t.icon}</span><span class="tool-cost">${t.cost} CR</span></div>
+      <div class="tool-name">${t.name}</div>
+      <div class="tool-desc">${t.desc}</div>
+    </div>
+  `).join('');
+}
+
+function showDashSection(section, btn) {
+  ['overview','tools','activity','history'].forEach(s => {
+    const el = document.getElementById(`dash-${s}`);
+    if (el) el.style.display = s === section ? 'block' : 'none';
+  });
+  if (btn) {
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  if (section === 'history') renderHistory();
+}
+
+function renderHistory() {
+  const container = document.getElementById('history-list');
+  if (!container) return;
+  if (state.history.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text2);">No history yet. Generate something! ⚡</div>';
+    return;
+  }
+  container.innerHTML = state.history.map((h, i) => `
+    <div style="display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <span>${h.tool} — ${h.prompt.substring(0,40)}...</span>
+      <span style="color:var(--cyan);">${h.time}</span>
+    </div>
+  `).join('');
+
+  // also update recent list on overview
+  const recentList = document.getElementById('recent-list');
+  if (recentList && state.history.length > 0) {
+    recentList.innerHTML = state.history.slice(0,5).map(h => `
+      <div style="display:flex;align-items:center;gap:12px;padding:0.8rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.04);">
+        <span style="font-size:1.2rem;">${h.icon}</span>
+        <div style="flex:1;">
+          <div style="font-size:0.88rem;color:var(--text);">${h.tool}</div>
+          <div style="font-size:0.78rem;color:var(--text2);">${h.prompt.substring(0,50)}...</div>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text2);">${h.time}</span>
+      </div>
+    `).join('');
+  }
+}
+
+// ===================== TOOL MODAL =====================
+function openToolModal(toolId) {
+  const tool = TOOLS.find(t => t.id === toolId) || TOOLS[0];
+  state.currentTool = tool;
+  document.getElementById('modal-tool-title').textContent = `${tool.icon} ${tool.name}`;
+  document.getElementById('modal-tool-cost').textContent = `Cost: ${tool.cost} credits • Your balance: ${state.credits} credits`;
+  document.getElementById('modal-prompt').value = '';
+  document.getElementById('modal-output').textContent = '';
+  document.getElementById('modal-output').classList.remove('visible');
+  document.getElementById('output-actions').style.display = 'none';
+  document.getElementById('modal-prompt').placeholder = `Describe what you want: e.g. "${tool.id === 'blog' ? 'Write a blog post about the benefits of remote work for startups' : tool.id === 'adcopy' ? 'Ad for a premium coffee subscription targeting millennials' : 'Enter your topic or details here...'}"`;
+  document.getElementById('tool-modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('tool-modal').classList.remove('open'); }
+
+function generateContent() {
+  const prompt = document.getElementById('modal-prompt').value.trim();
+  if (!prompt) { showToast('Please enter a prompt first!','error'); return; }
+  const tool = state.currentTool;
+  if (state.credits < tool.cost) { showToast('Not enough credits! Buy more to continue.','error'); return; }
+  document.getElementById('gen-btn').disabled = true;
+  document.getElementById('generating').style.display = 'flex';
+  document.getElementById('modal-output').classList.remove('visible');
+  const delay = 1500 + Math.random() * 1500;
+  setTimeout(() => {
+    const output = (AI_RESPONSES[tool.id] || AI_RESPONSES.blog)(prompt);
+    document.getElementById('modal-output').textContent = output;
+    document.getElementById('modal-output').classList.add('visible');
+    document.getElementById('generating').style.display = 'none';
+    document.getElementById('output-actions').style.display = 'flex';
+    document.getElementById('gen-btn').disabled = false;
+    state.credits -= tool.cost;
+    state.generations++;
+    document.getElementById('credit-display').textContent = state.credits;
+    document.getElementById('credit-fill').style.width = `${(state.credits/state.maxCredits)*100}%`;
+    document.getElementById('sc-gen').textContent = state.generations;
+    document.getElementById('sc-cred').textContent = state.credits;
+    // Add to history
+    state.history.unshift({ tool: tool.name, prompt, time: 'just now', icon: tool.icon });
+    saveState();
+    showToast(`Generated! ${tool.cost} credits used. ⚡`,'success');
+  }, delay);
+}
+
+function copyOutput() {
+  const text = document.getElementById('modal-output').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard! 📋','success')).catch(() => showToast('Copy failed','error'));
+}
+
+function downloadOutput() {
+  const text = document.getElementById('modal-output').textContent;
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+  a.download = `${state.currentTool?.id || 'ai'}-output.txt`;
+  a.click();
+  showToast('File downloaded! ⬇','success');
+}
+
+// ===================== MARKETPLACE =====================
+const SERVICES = [
+  { id:1, icon:'📝', title:'Premium SEO Blog Post (1500+ Words)', seller:'@contentpro', rating:4.9, reviews:284, price:25, sales:1240, cat:'writing', featured:true },
+  { id:2, icon:'📢', title:'Facebook & Instagram Ad Copy Bundle', seller:'@admaster', rating:4.8, reviews:156, price:15, sales:890, cat:'marketing', featured:true },
+  { id:3, icon:'📱', title:'30 Instagram Captions + Hashtag Sets', seller:'@socialguru', rating:5.0, reviews:342, price:12, sales:2100, cat:'social', featured:false },
+  { id:4, icon:'📄', title:'ATS-Optimized Resume + Cover Letter', seller:'@resumeai', rating:4.9, reviews:198, price:35, sales:567, cat:'writing', featured:true },
+  { id:5, icon:'🎨', title:'10 AI Logo Prompt Pack + Brand Kit', seller:'@designpro', rating:4.7, reviews:89, price:20, sales:340, cat:'design', featured:false },
+  { id:6, icon:'📧', title:'7-Email Welcome Sequence + Automation', seller:'@emailpro', rating:4.8, reviews:124, price:30, sales:420, cat:'email', featured:false },
+  { id:7, icon:'🛍️', title:'50 E-commerce Product Descriptions', seller:'@shopwrite', rating:4.6, reviews:67, price:18, sales:280, cat:'writing', featured:false },
+  { id:8, icon:'💡', title:'Brand Slogan + 10 Tagline Variations', seller:'@brandai', rating:4.9, reviews:203, price:10, sales:760, cat:'marketing', featured:true },
+  { id:9, icon:'🔍', title:'Full SEO Audit + Meta Tags Package', seller:'@seoexpert', rating:4.8, reviews:145, price:22, sales:510, cat:'seo', featured:false },
+  { id:10, icon:'🎬', title:'YouTube Script + Thumbnail Copy (5 videos)', seller:'@ytcreator', rating:4.7, reviews:91, price:40, sales:190, cat:'marketing', featured:false },
+  { id:11, icon:'📱', title:'TikTok Caption Pack (30 days)', seller:'@tiktokpro', rating:4.9, reviews:178, price:8, sales:1560, cat:'social', featured:false },
+  { id:12, icon:'📊', title:'LinkedIn Content Calendar (30 posts)', seller:'@linkedinpro', rating:4.8, reviews:112, price:28, sales:380, cat:'social', featured:true }
+];
+
+let filteredServices = [...SERVICES];
+let activeCategory = 'all';
+
+function renderMarketplace() {
+  const grid = document.getElementById('services-grid');
+  if (!grid) return;
+  grid.innerHTML = filteredServices.map((s, i) => `
+    <div class="service-card" onclick="openServiceModal(${s.id})">
+      <div class="service-thumb" style="background:${getThumbBg(i)}">${s.icon}
+        ${s.featured ? '<div class="featured-badge">⭐ FEATURED</div>' : ''}
+      </div>
+      <div class="service-body">
+        <div class="service-seller">
+          <div class="seller-avatar">AI</div>
+          <span>${s.seller}</span>
+        </div>
+        <div class="service-title">${s.title}</div>
+        <div class="service-rating">
+          <span class="rating-stars">${'★'.repeat(Math.floor(s.rating))}${s.rating%1?'½':''}</span>
+          <span>${s.rating}</span>
+          <span>(${s.reviews})</span>
+        </div>
+        <div class="service-footer">
+          <div class="service-price">$${s.price}</div>
+          <div class="sales-count">${s.sales.toLocaleString()} sales</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getThumbBg(i) {
+  const bgs = [
+    'linear-gradient(135deg,rgba(0,245,255,0.15),rgba(139,92,246,0.15))',
+    'linear-gradient(135deg,rgba(139,92,246,0.15),rgba(255,0,170,0.15))',
+    'linear-gradient(135deg,rgba(255,0,170,0.15),rgba(255,107,0,0.15))',
+    'linear-gradient(135deg,rgba(34,197,94,0.15),rgba(0,245,255,0.15))',
+  ];
+  return bgs[i % bgs.length];
+}
+
+function filterServices(q) {
+  filteredServices = SERVICES.filter(s =>
+    (activeCategory === 'all' || s.cat === activeCategory) &&
+    (s.title.toLowerCase().includes(q.toLowerCase()) || s.seller.includes(q))
+  );
+  renderMarketplace();
+}
+
+function filterCat(cat, btn) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filteredServices = cat === 'all' ? [...SERVICES] : SERVICES.filter(s => s.cat === cat);
+  renderMarketplace();
+}
+
+function sortServices(val) {
+  if (val.includes('Price Low')) filteredServices.sort((a,b) => a.price-b.price);
+  else if (val.includes('Price High')) filteredServices.sort((a,b) => b.price-a.price);
+  else if (val.includes('Top Rated')) filteredServices.sort((a,b) => b.rating-a.rating);
+  else if (val.includes('Newest')) filteredServices.sort((a,b) => b.id-a.id);
+  else filteredServices.sort((a,b) => b.sales-a.sales);
+  renderMarketplace();
+}
+
+let selectedService = null;
+function openServiceModal(id) {
+  selectedService = SERVICES.find(s => s.id === id);
+  if (!selectedService) return;
+  document.getElementById('svc-modal-title').textContent = selectedService.title;
+  document.getElementById('svc-modal-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;">
+      <div style="font-size:3rem;">${selectedService.icon}</div>
+      <div>
+        <div style="font-size:0.8rem;color:var(--text2);">Sold by ${selectedService.seller}</div>
+        <div class="service-rating" style="margin-top:4px;"><span class="rating-stars">${'★'.repeat(Math.floor(selectedService.rating))}</span> ${selectedService.rating} (${selectedService.reviews} reviews)</div>
+      </div>
+    </div>
+    <div style="background:rgba(0,245,255,0.05);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+      <div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--cyan);margin-bottom:8px;">WHAT YOU'LL RECEIVE:</div>
+      <ul style="list-style:none;font-size:0.88rem;color:var(--text2);line-height:2;">
+        <li>✦ Professional AI-generated content</li>
+        <li>✦ Fully editable source files</li>
+        <li>✦ Unlimited revisions (48h turnaround)</li>
+        <li>✦ Commercial usage rights included</li>
+      </ul>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--cyan);">$${selectedService.price}</div><div style="font-size:0.78rem;color:var(--text2);">One-time payment</div></div>
+      <div style="text-align:right;font-size:0.82rem;color:var(--text2);">${selectedService.sales.toLocaleString()} sales<br>⚡ Instant delivery</div>
+    </div>
+  `;
+  document.getElementById('service-modal').classList.add('open');
+}
+
+function closeServiceModal() { document.getElementById('service-modal').classList.remove('open'); }
+
+function purchaseService() {
+  if (!selectedService) return;
+  closeServiceModal();
+  showToast('Processing payment...','info');
+  setTimeout(() => { showToast(`Purchase successful! 🎉 Check your email for delivery.`,'success'); }, 1800);
+}
+
+// ===================== SELL PAGE =====================
+function updatePreview() {
+  const title = document.getElementById('sell-title')?.value || '';
+  const desc = document.getElementById('sell-desc')?.value || '';
+  const price = parseFloat(document.getElementById('sell-price')?.value || 15);
+  const cat = document.getElementById('sell-cat')?.value || '';
+  const delivery = document.getElementById('sell-delivery')?.value || '1 day';
+  if (document.getElementById('prev-title')) document.getElementById('prev-title').textContent = title || 'Your Service Title';
+  if (document.getElementById('prev-desc')) document.getElementById('prev-desc').textContent = desc || 'Your description will appear here...';
+  if (document.getElementById('prev-price')) document.getElementById('prev-price').textContent = isNaN(price) ? '$0' : `$${price}`;
+  if (document.getElementById('prev-cat')) document.getElementById('prev-cat').textContent = cat;
+  if (document.getElementById('prev-delivery')) document.getElementById('prev-delivery').textContent = `⚡ ${delivery} delivery`;
+  const est = price * 10 * 0.95;
+  if (document.getElementById('est-earnings')) document.getElementById('est-earnings').textContent = `$${est.toFixed(0)}`;
+}
+
+function aiImproveDesc() {
+  const desc = document.getElementById('sell-desc');
+  if (!desc) return;
+  showToast('AI improving your description...','info');
+  setTimeout(() => {
+    const improved = `I will create a professionally written, SEO-optimized piece of AI-generated content tailored specifically to your niche and target audience.\n\nWhat you'll receive:\n✓ Fully unique, plagiarism-free content\n✓ Optimized for search engines and conversions\n✓ Delivered in editable format (Word/Google Docs)\n✓ Unlimited revisions within 48 hours\n\nPerfect for: businesses, agencies, freelancers, and content creators looking to scale their content production without sacrificing quality.`;
+    desc.value = improved;
+    updatePreview();
+    showToast('Description improved! ✨','success');
+  }, 1500);
+}
+
+function publishService() {
+  const title = document.getElementById('sell-title')?.value;
+  if (!title) { showToast('Please add a service title','error'); return; }
+  showToast('Publishing service...','info');
+  setTimeout(() => { showToast('Service published to marketplace! 🚀','success'); showPage('marketplace'); }, 1800);
+}
+
+function addTag(e, input) {
+  if (e.key === 'Enter' && input.value.trim()) {
+    const wrap = document.getElementById('tags-wrap');
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    tag.textContent = input.value.trim() + ' ✕';
+    tag.onclick = () => removeTag(tag);
+    wrap.appendChild(tag);
+    input.value = '';
+  }
+}
+function removeTag(el) { el.remove(); }
+
+// ===================== ADMIN =====================
+const FAKE_USERS = [
+  {name:'Sarah Kim',email:'sarah@example.com',role:'Pro Creator',credits:480,earnings:'$3,240',status:'active'},
+  {name:'Marcus Rodriguez',email:'marcus@example.com',role:'Agency',credits:1000,earnings:'$8,120',status:'active'},
+  {name:'Priya Sharma',email:'priya@example.com',role:'Creator',credits:120,earnings:'$890',status:'active'},
+  {name:'Tom Davis',email:'tom@example.com',role:'Buyer',credits:50,earnings:'$0',status:'pending'},
+  {name:'Lisa Chen',email:'lisa@example.com',role:'Creator',credits:0,earnings:'$2,400',status:'banned'},
+];
+const FAKE_SERVICES = [
+  {title:'SEO Blog Pack',seller:'@contentpro',price:'$25',sales:1240,rating:'4.9★',status:'active'},
+  {title:'Ad Copy Bundle',seller:'@admaster',price:'$15',sales:890,rating:'4.8★',status:'active'},
+  {title:'Resume Service',seller:'@resumeai',price:'$35',sales:567,rating:'4.9★',status:'pending'},
+  {title:'Logo Prompts',seller:'@designpro',price:'$20',sales:340,rating:'4.7★',status:'active'},
+  {title:'Email Sequence',seller:'@emailpro',price:'$30',sales:420,rating:'4.8★',status:'active'},
+];
+
+function initAdmin() {
+  renderAdminCharts();
+  renderAdminLog();
+  renderUsersTable();
+  renderServicesTable();
+}
+
+function renderAdminCharts() {
+  const revenueData = [3200, 4100, 2800, 5600, 4900, 6200, 5100];
+  const usersData = [120, 180, 90, 240, 200, 310, 280];
+  const revChart = document.getElementById('revenue-chart');
+  const usrChart = document.getElementById('users-chart');
+  if (!revChart || !usrChart) return;
+  const maxRev = Math.max(...revenueData);
+  const maxUsr = Math.max(...usersData);
+  revChart.innerHTML = revenueData.map(v => `<div class="chart-bar" style="height:${(v/maxRev)*100}%" data-val="$${(v/1000).toFixed(1)}k"></div>`).join('');
+  usrChart.innerHTML = usersData.map(v => `<div class="chart-bar" style="height:${(v/maxUsr)*100}%;background:linear-gradient(180deg,var(--purple),var(--pink));" data-val="${v}"></div>`).join('');
+}
+
+const LOG_EVENTS = [
+  'User registered: user@example.com','AI generation: blog_writer — 847 tokens','Service purchased: SEO Blog Pack ($25)','Credit purchase: 100 credits (+$9.99)','New review: 5★ on "Ad Copy Bundle"','User upgraded to Pro plan ($29/mo)','Marketplace listing: "YouTube Script"','Payment processed: $35 → @resumeai','API request: /v1/generate — 200 OK','Fraud alert cleared: transaction #8821'
+];
+
+function renderAdminLog() {
+  const log = document.getElementById('admin-log');
+  const fullLog = document.getElementById('full-log');
+  if (!log && !fullLog) return;
+  const lines = Array.from({length:15}, (_, i) => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - i * 3);
+    const time = now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const event = LOG_EVENTS[i % LOG_EVENTS.length];
+    const type = ['INFO','SALE','AUTH','SYS ','WARN'][i%5];
+    return `<div class="log-line"><span class="log-time">${time}</span><span class="log-type">[${type}]</span><span class="log-msg">${event}</span></div>`;
+  }).join('');
+  if (log) log.innerHTML = lines;
+  if (fullLog) fullLog.innerHTML = lines + lines;
+  // Live log updates
+  setInterval(() => {
+    const event = LOG_EVENTS[Math.floor(Math.random()*LOG_EVENTS.length)];
+    const time = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const newLine = `<div class="log-line"><span class="log-time">${time}</span><span class="log-type">[LIVE]</span><span class="log-msg" style="color:var(--cyan);">${event}</span></div>`;
+    if (log) log.innerHTML = newLine + log.innerHTML;
+    if (fullLog) fullLog.innerHTML = newLine + fullLog.innerHTML;
+  }, 4000);
+}
+
+function renderUsersTable() {
+  const tbody = document.getElementById('users-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = FAKE_USERS.map(u => `
+    <tr>
+      <td><strong>${u.name}</strong></td>
+      <td style="color:var(--text2);font-family:var(--font-mono);font-size:0.78rem;">${u.email}</td>
+      <td style="color:var(--cyan);">${u.role}</td>
+      <td style="font-family:var(--font-mono);">${u.credits}</td>
+      <td style="color:#22c55e;font-family:var(--font-mono);">${u.earnings}</td>
+      <td><span class="status-badge status-${u.status}">${u.status.toUpperCase()}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('User suspended','info')">Suspend</button>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Credits added','success')" style="margin-left:4px;">+CR</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderServicesTable() {
+  const tbody = document.getElementById('services-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = FAKE_SERVICES.map(s => `
+    <tr>
+      <td><strong>${s.title}</strong></td>
+      <td style="color:var(--cyan);">${s.seller}</td>
+      <td style="font-family:var(--font-display);color:var(--cyan);">${s.price}</td>
+      <td style="font-family:var(--font-mono);">${s.sales.toLocaleString()}</td>
+      <td style="color:#fbbf24;">${s.rating}</td>
+      <td><span class="status-badge status-${s.status}">${s.status.toUpperCase()}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Service approved','success')">Approve</button>
+        <button class="btn btn-ghost btn-sm" style="margin-left:4px;" onclick="showToast('Service removed','error')">Remove</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function showAdminSection(section, el) {
+  ['overview','users','services','analytics','credits','logs'].forEach(s => {
+    const div = document.getElementById(`admin-${s}`);
+    if (div) div.style.display = s === section ? (s === 'overview' ? 'block' : 'block') : 'none';
+  });
+  document.querySelectorAll('.admin-link').forEach(l => l.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+// ===================== SCROLL REVEAL =====================
+window.addEventListener('scroll', () => {
+  document.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 80) el.classList.add('visible');
+  });
+}, { passive: true });
+
+// ===================== INIT =====================
+window.addEventListener('DOMContentLoaded', () => {
+  showPage('home');
+  // Set date
+  const d = document.getElementById('dash-date');
+  if (d) d.textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  animateCounters();
+  setTimeout(initReveal, 200);
+  // Sell preview init
+  document.getElementById('sell-title')?.addEventListener('input', updatePreview);
+  // Warm welcome
+  setTimeout(() => showToast('Welcome to MicroAI Hub! ⚡','info'), 1000);
+});
+</script>
+</body>
+</html>
+HTMLEOF
+echo "Done. File size: $(wc -c < /mnt/user-data/outputs/microai-hub.html) bytes"
+Output
+
+Command argument is 134_371 bytes, exceeding the 100_000-byte per-argument limit. For large content, pipe via stdin or use a file-write API instead of embedding the content inline in the command. Argument preview: 'cat > /mnt/user-data/outputs/microai-hub.html << \'HTMLEOF\'\n<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>'
+Done
+
+You are out of free messages until 8:20 PM
+Get more
+
+Create a COMPLETE ADVANCED futuristic AI mark
